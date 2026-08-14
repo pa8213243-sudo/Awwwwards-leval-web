@@ -173,11 +173,32 @@ export const TactileMediaFrame: React.FC<TactileMediaFrameProps> = ({
       {isNearProximity && (
         <div
           ref={mediaRef}
-          className={`w-full h-full relative will-change-transform transform-gpu transition-opacity duration-700 ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
+          className="w-full h-full relative will-change-transform transform-gpu"
         >
-          {videoSrc ? (
+          {/* Base Image Layer (Always loaded as reliable poster media) */}
+          <img
+            src={src || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop'}
+            alt={alt}
+            decoding="async"
+            loading="lazy"
+            onLoad={() => {
+              setLoadProgress(100);
+              setIsLoaded(true);
+              setLoadState('loaded');
+            }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop';
+              setIsLoaded(true);
+              setLoadState('loaded');
+            }}
+            className={`w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-500 ${
+              isLoaded ? 'opacity-100' : 'opacity-80'
+            }`}
+          />
+
+          {/* Optional Overlay Video Layer (Fades in over image when ready) */}
+          {videoSrc && (
             <video
               autoPlay
               loop
@@ -188,28 +209,11 @@ export const TactileMediaFrame: React.FC<TactileMediaFrameProps> = ({
                 setIsLoaded(true);
                 setLoadState('loaded');
               }}
-              className={`w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-500 ${
-                isLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
+              className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-all duration-500"
             >
               <source src={videoSrc} type="video/mp4" />
             </video>
-          ) : src ? (
-            <img
-              src={src}
-              alt={alt}
-              decoding="async"
-              loading="lazy"
-              onLoad={() => {
-                setLoadProgress(100);
-                setIsLoaded(true);
-                setLoadState('loaded');
-              }}
-              className={`w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-500 ${
-                isLoaded ? 'opacity-100' : 'opacity-0'
-              }`}
-            />
-          ) : null}
+          )}
         </div>
       )}
 

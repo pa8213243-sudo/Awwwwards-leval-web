@@ -339,46 +339,48 @@ export const WorkSection: React.FC<WorkSectionProps> = ({ onContact }) => {
               )}
 
               {/* Card Content Grid */}
-              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
                 
                 {/* Left Column: Full Metadata & Deliverables */}
-                <div className="lg:col-span-7 space-y-4">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="px-2.5 py-1 bg-emerald-500 text-black font-mono text-[10px] font-bold uppercase tracking-wider">
-                      {currentStackProject.category}
-                    </span>
-                    <span className="px-2 py-0.5 bg-white/10 text-white/90 border border-white/20 font-mono text-[10px] font-bold">
-                      YEAR: {currentStackProject.year}
-                    </span>
-                    <span className="text-emerald-400 font-mono text-[10px] font-bold bg-black/60 px-2 py-0.5 border border-emerald-500/30">
-                      {currentStackProject.impactMetric}
-                    </span>
-                  </div>
+                <div className="lg:col-span-7 space-y-4 flex flex-col justify-between">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-2.5 py-1 bg-emerald-500 text-black font-mono text-[10px] font-bold uppercase tracking-wider">
+                        {currentStackProject.category}
+                      </span>
+                      <span className="px-2 py-0.5 bg-white/10 text-white/90 border border-white/20 font-mono text-[10px] font-bold">
+                        YEAR: {currentStackProject.year}
+                      </span>
+                      <span className="text-emerald-400 font-mono text-[10px] font-bold bg-black/60 px-2 py-0.5 border border-emerald-500/30">
+                        {currentStackProject.impactMetric}
+                      </span>
+                    </div>
 
-                  <div>
-                    <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-white uppercase tracking-tight leading-tight">
-                      {currentStackProject.title}
-                    </h3>
-                    <p className="text-xs font-mono text-emerald-400 font-semibold mt-1">
-                      CLIENT / SCOPE: {currentStackProject.client}
+                    <div>
+                      <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-white uppercase tracking-tight leading-tight">
+                        {currentStackProject.title}
+                      </h3>
+                      <p className="text-xs font-mono text-emerald-400 font-semibold mt-1">
+                        CLIENT / SCOPE: {currentStackProject.client}
+                      </p>
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-white/90 leading-relaxed font-sans bg-black/50 p-3.5 border border-white/10 rounded-xs">
+                      {currentStackProject.summary}
                     </p>
-                  </div>
 
-                  <p className="text-xs sm:text-sm text-white/90 leading-relaxed font-sans bg-black/50 p-3.5 border border-white/10 rounded-xs">
-                    {currentStackProject.summary}
-                  </p>
-
-                  {/* Key Deliverables */}
-                  <div className="space-y-2 pl-3 border-l-2 border-[#E0533C] bg-black/30 py-2">
-                    <span className="text-[10px] font-mono text-white/50 uppercase font-bold tracking-wider">
-                      KEY DELIVERABLES & IMPACT:
-                    </span>
-                    {currentStackProject.deliverables.map((del, i) => (
-                      <div key={i} className="text-xs font-mono text-white/90 flex items-center gap-2">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                        <span>{del}</span>
-                      </div>
-                    ))}
+                    {/* Key Deliverables */}
+                    <div className="space-y-2 pl-3 border-l-2 border-[#E0533C] bg-black/30 py-2">
+                      <span className="text-[10px] font-mono text-white/50 uppercase font-bold tracking-wider">
+                        KEY DELIVERABLES & IMPACT:
+                      </span>
+                      {currentStackProject.deliverables.map((del, i) => (
+                        <div key={i} className="text-xs font-mono text-white/90 flex items-center gap-2">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          <span>{del}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Tool Stack Tags */}
@@ -393,13 +395,13 @@ export const WorkSection: React.FC<WorkSectionProps> = ({ onContact }) => {
                 </div>
 
                 {/* Right Column: Tactile Media Preview & Actions */}
-                <div className="lg:col-span-5 space-y-4">
-                  <div className="w-full rounded-xs border-2 border-white/20 overflow-hidden shadow-xl bg-black/60">
+                <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
+                  <div className="w-full flex-1 min-h-[260px] sm:min-h-[320px] rounded-xs border-2 border-white/20 overflow-hidden shadow-xl bg-black/60 relative">
                     <TactileMediaFrame
                       src={currentStackProject.image}
                       videoSrc={currentStackProject.videoUrl}
                       alt={currentStackProject.title}
-                      aspectRatio="aspect-[16/10]"
+                      aspectRatio="h-full w-full"
                       zoomScale={1.1}
                       enableParallax={true}
                       pillTag={currentStackProject.impactMetric}
@@ -408,7 +410,7 @@ export const WorkSection: React.FC<WorkSectionProps> = ({ onContact }) => {
                   </div>
 
                   {/* Direct Action Buttons */}
-                  <div className="flex items-center gap-2.5 pt-2">
+                  <div className="flex items-center gap-2.5 pt-1">
                     {currentStackProject.externalUrl && (
                       <a
                         href={currentStackProject.externalUrl}
