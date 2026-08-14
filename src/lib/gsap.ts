@@ -124,15 +124,15 @@ export function setupSectionViewportClamping(
 
   return ScrollTrigger.create({
     trigger: sectionElement,
-    start: isTouch ? 'top 85%' : 'top 50%',
+    start: isTouch ? 'top 85%' : (effectivePin ? 'top top' : 'top 75%'),
     end: effectivePin 
       ? (typeof calculatedPinDistance === 'number' ? `+=${calculatedPinDistance}` : calculatedPinDistance)
-      : (isTouch ? 'bottom 15%' : `+=${calculatedPinDistance}`),
+      : (isTouch ? 'bottom 15%' : 'bottom 25%'),
     pin: effectivePin,
     pinSpacing: effectivePin,
     anticipatePin: effectivePin ? 1 : 0,
     pinType: isTouch ? 'transform' : 'fixed',
-    scrub: isTouch ? 0.25 : 0.6,
+    scrub: isTouch ? 0.25 : 0.5,
     invalidateOnRefresh: true,
     onEnter: (self) => {
       soundFx.playUiHum(130, 0.4);

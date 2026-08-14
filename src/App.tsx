@@ -24,7 +24,6 @@ import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { PrintDossier, PrintOptions, DEFAULT_PRINT_OPTIONS } from './components/PrintDossier';
 import { ExportPDFModal } from './components/ExportPDFModal';
-import { MobileScrollTriggerDebugOverlay } from './components/MobileScrollTriggerDebugOverlay';
 import { GuideRulerOverlay } from './components/GuideRulerOverlay';
 import { PERSONAL_INFO } from './data/portfolioData';
 import { initSmoothScroll, ScrollTrigger, isTouchMobileDevice } from './lib/gsap';
@@ -320,8 +319,6 @@ export default function App() {
               <ContactSection onCopyEmail={handleCopyEmail} />
             </main>
 
-            {/* Mobile ScrollTrigger Pin & Clamping HUD Diagnostic Overlay */}
-            <MobileScrollTriggerDebugOverlay />
 
             {/* Visual Guide Ruler Overlay (25%, 50%, 75% Alignment Verification) */}
             <GuideRulerOverlay

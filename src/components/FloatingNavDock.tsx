@@ -160,12 +160,12 @@ export const FloatingNavDock: React.FC<FloatingNavDockProps> = ({
       </AnimatePresence>
 
       {/* Floating Bottom Pill Bar */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-[#121214]/90 backdrop-blur-xl border border-white/20 p-1.5 rounded-full shadow-2xl flex items-center gap-1.5 sm:gap-2"
+          className="bg-[#121214]/90 backdrop-blur-xl border border-white/20 p-1.5 rounded-full shadow-2xl flex items-center gap-1.5 sm:gap-2 pointer-events-auto"
         >
           {/* MENU + Toggle */}
           <button

@@ -78,6 +78,7 @@ export const WorkSection: React.FC<WorkSectionProps> = ({ onContact }) => {
 
     const ctx = gsap.context(() => {
       setupSectionViewportClamping(section, {
+        shouldPin: false,
         onProgress: (prog) => setScrollProgress(prog),
         onMilestone: (m) => {
           soundFx.triggerSectionMilestone('work', m, 480 + m * 60);
@@ -88,33 +89,34 @@ export const WorkSection: React.FC<WorkSectionProps> = ({ onContact }) => {
     return () => ctx.revert();
   }, []);
 
-  // Handle switching layout with GSAP Flip for butter-smooth geometry transitions
+  // Always recalculate ScrollTrigger positions across the page whenever layout mode or filters change
+  useEffect(() => {
+    const refreshTriggers = () => {
+      ScrollTrigger.refresh();
+    };
+
+    const r1 = requestAnimationFrame(refreshTriggers);
+    const t1 = setTimeout(refreshTriggers, 60);
+    const t2 = setTimeout(refreshTriggers, 200);
+    const t3 = setTimeout(refreshTriggers, 450);
+
+    return () => {
+      cancelAnimationFrame(r1);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [layoutMode, selectedCategory, activeStackIdx]);
+
+  // Handle switching layout with clean mode state update and trigger refresh
   const handleSwitchLayout = (newMode: WorkLayoutMode) => {
     soundFx.playNav();
-    
-    if (gridContainerRef.current) {
-      const state = Flip.getState(gridContainerRef.current.children, { props: 'transform,opacity,width,height' });
-      setLayoutMode(newMode);
-      
-      requestAnimationFrame(() => {
-        if (gridContainerRef.current) {
-          Flip.from(state, {
-            duration: 0.6,
-            ease: 'power3.inOut',
-            stagger: 0.04,
-            absolute: true,
-            onComplete: () => {
-              ScrollTrigger.refresh();
-              requestAnimationFrame(() => {
-                ScrollTrigger.refresh();
-              });
-            },
-          });
-        }
-      });
-    } else {
-      setLayoutMode(newMode);
-    }
+    setLayoutMode(newMode);
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+      setTimeout(() => ScrollTrigger.refresh(), 100);
+      setTimeout(() => ScrollTrigger.refresh(), 300);
+    });
   };
 
   const handleNextStack = () => {
@@ -134,7 +136,7 @@ export const WorkSection: React.FC<WorkSectionProps> = ({ onContact }) => {
     <section
       ref={sectionRef}
       id="work"
-      className="relative w-full bg-[#0A0A0E] text-white border-b border-white/10 select-none overflow-hidden py-16 sm:py-24"
+      className="relative w-full bg-[#0A0A0E] text-white border-b border-white/10 select-none overflow-hidden pt-16 sm:pt-24 pb-28 sm:pb-36 lg:pb-44"
     >
       {/* CONTEXTUAL PROFESSIONAL BACKGROUND PHOTO */}
       <SectionBackgroundLayer sectionKey="work" opacity={0.48} />
@@ -461,123 +463,143 @@ export const WorkSection: React.FC<WorkSectionProps> = ({ onContact }) => {
         {/* MODE 3: EDITORIAL MAGAZINE GRID (SMART AUTO-HEIGHT)          */}
         {/* ------------------------------------------------------------ */}
         {layoutMode === 'grid' && (
-          <div ref={gridContainerRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
-            {filteredProjects.map((project, idx) => (
-              <InteractiveTiltCard
-                key={project.id}
-                className="w-full"
-                onClick={() => setSelectedProject(project)}
-              >
-                <div className="bg-[#121217]/95 border border-white/20 p-6 sm:p-7 rounded-none shadow-2xl flex flex-col justify-between min-h-fit hover:border-[#E0533C] transition-all group cursor-pointer backdrop-blur-md relative overflow-hidden">
-                  
-                  {/* Subtle Background Accent Photo */}
-                  {project.image && (
-                    <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none opacity-30">
-                      <img
-                        src={project.image}
-                        alt=""
-                        className="w-full h-full object-cover filter saturate-125 scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#121217] via-[#121217]/90 to-[#121217]/80" />
-                    </div>
-                  )}
+          <div ref={gridContainerRef} className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 w-full">
+            {filteredProjects.map((project, idx) => {
+              const isLastOdd =
+                idx === filteredProjects.length - 1 &&
+                filteredProjects.length % 2 === 1;
 
-                  {/* Card Content (Foreground) */}
-                  <div className="relative z-10 space-y-4">
-                    {/* Top Row: Category & Year */}
-                    <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                      <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                        {project.category}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono text-emerald-400 font-bold bg-black/60 px-1.5 py-0.5 border border-emerald-500/30">
-                          {project.impactMetric}
-                        </span>
-                        <span className="font-mono text-xs text-white/60 bg-white/10 px-2 py-0.5">
-                          {project.year}
-                        </span>
-                      </div>
-                    </div>
+              return (
+                <div
+                  key={project.id}
+                  className={`w-full ${
+                    isLastOdd ? 'col-span-1 md:col-span-2 flex justify-center' : ''
+                  }`}
+                >
+                  <div
+                    className={`w-full ${
+                      isLastOdd
+                        ? 'md:max-w-[calc(50%-0.75rem)] lg:max-w-[calc(50%-1rem)]'
+                        : ''
+                    } h-full`}
+                  >
+                    <InteractiveTiltCard
+                      className="w-full h-full"
+                      onClick={() => setSelectedProject(project)}
+                    >
+                      <div className="bg-[#121217]/95 border border-white/20 hover:border-[#E0533C] transition-all p-6 sm:p-7 rounded-none shadow-2xl flex flex-col justify-between h-full group cursor-pointer backdrop-blur-md relative overflow-hidden">
+                        
+                        {/* Subtle Background Accent Photo */}
+                        {project.image && (
+                          <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none opacity-25 group-hover:opacity-35 transition-opacity duration-300">
+                            <img
+                              src={project.image}
+                              alt=""
+                              className="w-full h-full object-cover filter saturate-125 scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#121217] via-[#121217]/90 to-[#121217]/80" />
+                          </div>
+                        )}
 
-                    {/* High-Resolution Tactile Media Preview Frame */}
-                    <div className="w-full">
-                      <TactileMediaFrame
-                        src={project.image}
-                        videoSrc={project.videoUrl}
-                        alt={project.title}
-                        aspectRatio="aspect-[16/10]"
-                        zoomScale={1.12}
-                        enableParallax={true}
-                        pillTag={project.impactMetric}
-                        accentColor="#E0533C"
-                      />
-                    </div>
+                        {/* Card Content (Foreground) */}
+                        <div className="relative z-10 space-y-4 flex-1 flex flex-col">
+                          {/* Top Row: Category & Year */}
+                          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                            <span className="text-[10px] font-mono font-bold uppercase px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                              {project.category}
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-mono text-emerald-400 font-bold bg-black/60 px-1.5 py-0.5 border border-emerald-500/30">
+                                {project.impactMetric}
+                              </span>
+                              <span className="font-mono text-xs text-white/60 bg-white/10 px-2 py-0.5">
+                                {project.year}
+                              </span>
+                            </div>
+                          </div>
 
-                    {/* Title & Scope */}
-                    <div>
-                      <h3 className="font-serif text-xl sm:text-2xl font-bold text-white group-hover:text-[#E0533C] transition-colors leading-snug">
-                        {project.title}
-                      </h3>
-                      <div className="text-[10px] font-mono text-emerald-400 font-semibold mt-1">
-                        CLIENT: {project.client}
-                      </div>
-                    </div>
+                          {/* High-Resolution Tactile Media Preview Frame */}
+                          <div className="w-full">
+                            <TactileMediaFrame
+                              src={project.image}
+                              videoSrc={project.videoUrl}
+                              alt={project.title}
+                              aspectRatio="aspect-[16/10]"
+                              zoomScale={1.12}
+                              enableParallax={true}
+                              pillTag={project.impactMetric}
+                              accentColor="#E0533C"
+                            />
+                          </div>
 
-                    {/* Summary (Full Visibility) */}
-                    <p className="text-xs text-white/85 leading-relaxed font-sans bg-black/40 p-3 border border-white/10">
-                      {project.summary}
-                    </p>
+                          {/* Title & Scope */}
+                          <div className="pt-1">
+                            <h3 className="font-serif text-xl sm:text-2xl font-bold text-white group-hover:text-[#E0533C] transition-colors leading-snug">
+                              {project.title}
+                            </h3>
+                            <div className="text-[10px] font-mono text-emerald-400 font-semibold mt-1 tracking-wider uppercase">
+                              CLIENT: {project.client}
+                            </div>
+                          </div>
 
-                    {/* Key Deliverables List */}
-                    <div className="space-y-1.5 pl-3 border-l-2 border-emerald-400/80 bg-black/20 py-1.5">
-                      {project.deliverables.map((del, i) => (
-                        <div key={i} className="text-xs font-mono text-white/90 flex items-center gap-2">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                          <span>{del}</span>
+                          {/* Summary (Full Visibility) */}
+                          <p className="text-xs text-white/85 leading-relaxed font-sans bg-black/40 p-3 border border-white/10">
+                            {project.summary}
+                          </p>
+
+                          {/* Key Deliverables List */}
+                          <div className="space-y-1.5 pl-3 border-l-2 border-emerald-400/80 bg-black/20 py-2 mt-auto">
+                            {project.deliverables.map((del, i) => (
+                              <div key={i} className="text-xs font-mono text-white/90 flex items-start gap-2">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                                <span className="leading-snug">{del}</span>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
 
-                  {/* Bottom Action Footer */}
-                  <div className="relative z-10 pt-4 mt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap gap-1">
-                      {project.tools.map((t, i) => (
-                        <span key={i} className="text-[9px] font-mono text-white/70 bg-white/10 px-1.5 py-0.5 border border-white/10">
-                          #{t}
-                        </span>
-                      ))}
-                    </div>
+                        {/* Bottom Action Footer */}
+                        <div className="relative z-10 pt-4 mt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                          <div className="flex flex-wrap gap-1">
+                            {project.tools.map((t, i) => (
+                              <span key={i} className="text-[9px] font-mono text-white/70 bg-white/10 px-1.5 py-0.5 border border-white/10">
+                                #{t}
+                              </span>
+                            ))}
+                          </div>
 
-                    <div className="flex items-center gap-2">
-                      {project.externalUrl && (
-                        <a
-                          href={project.externalUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="px-2.5 py-1 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-mono text-[10px] uppercase flex items-center gap-1 rounded-xs"
-                          title="Open Live Workbook"
-                        >
-                          <ExternalLink className="w-3 h-3 text-emerald-400" />
-                          <span>LIVE</span>
-                        </a>
-                      )}
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedProject(project);
-                        }}
-                        className="px-3 py-1 bg-[#E0533C] hover:bg-[#c94530] text-white font-mono text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 rounded-xs shadow-md cursor-pointer"
-                      >
-                        <span>INSPECT</span>
-                        <ChevronRight className="w-3 h-3" />
-                      </button>
-                    </div>
+                          <div className="flex items-center gap-2">
+                            {project.externalUrl && (
+                              <a
+                                href={project.externalUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="px-2.5 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-mono text-[10px] uppercase flex items-center gap-1.5 rounded-xs transition-colors"
+                                title="Open Live Workbook"
+                              >
+                                <ExternalLink className="w-3 h-3 text-emerald-400" />
+                                <span>LIVE</span>
+                              </a>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedProject(project);
+                              }}
+                              className="px-3.5 py-1.5 bg-[#E0533C] hover:bg-[#c94530] text-white font-mono text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 rounded-xs shadow-md cursor-pointer transition-all hover:scale-105"
+                            >
+                              <span>INSPECT</span>
+                              <ChevronRight className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </InteractiveTiltCard>
                   </div>
                 </div>
-              </InteractiveTiltCard>
-            ))}
+              );
+            })}
           </div>
         )}
 

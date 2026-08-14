@@ -112,7 +112,7 @@ export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
           className="relative w-full h-full [transform-style:preserve-3d] rounded-sm overflow-hidden"
         >
           {/* Child Content */}
-          <div className="relative z-10 w-full h-full [transform:translateZ(20px)]">
+          <div className="relative z-10 w-full h-full [transform:translateZ(20px)] flex flex-col">
             {children}
           </div>
 

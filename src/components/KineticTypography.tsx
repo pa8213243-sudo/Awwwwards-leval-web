@@ -175,8 +175,10 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
           ease: 'power3.out',
           scrollTrigger: {
             trigger: el,
-            start: 'top 90%',
+            start: 'top 95%',
             toggleActions: 'play none none reverse',
+            invalidateOnRefresh: true,
+            fastScrollEnd: true,
           },
         }
       );
