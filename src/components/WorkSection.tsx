@@ -134,7 +134,7 @@ export const WorkSection: React.FC<WorkSectionProps> = ({ onContact }) => {
     <section
       ref={sectionRef}
       id="work"
-      className="relative w-full bg-[#0A0A0E] text-white border-b border-white/10 select-none overflow-hidden min-h-screen py-16 sm:py-24"
+      className="relative w-full bg-[#0A0A0E] text-white border-b border-white/10 select-none overflow-hidden py-16 sm:py-24"
     >
       {/* CONTEXTUAL PROFESSIONAL BACKGROUND PHOTO */}
       <SectionBackgroundLayer sectionKey="work" opacity={0.48} />

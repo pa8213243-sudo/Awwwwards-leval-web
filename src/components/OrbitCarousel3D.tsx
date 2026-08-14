@@ -117,7 +117,7 @@ export const OrbitCarousel3D: React.FC<OrbitCarousel3DProps> = ({
             <motion.div
               key={project.id}
               className="absolute w-[80%] max-w-[300px] sm:max-w-[370px] h-[240px] sm:h-[290px] rounded-none cursor-pointer [transform-style:preserve-3d] group"
-              style={{ zIndex }}
+              style={{ zIndex, willChange: 'transform, opacity' }}
               animate={{ x: translateX, z: translateZ, rotateY, scale, opacity }}
               transition={{ type: 'spring', stiffness: 260, damping: 28, mass: 0.8 }}
               onClick={() => {
@@ -215,14 +215,14 @@ export const OrbitCarousel3D: React.FC<OrbitCarousel3DProps> = ({
       </div>
 
       {/* ── ACTIVE PROJECT DETAIL PANEL (fills empty space below) ── */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="popLayout">
         <motion.div
           key={activeProject.id}
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.32, ease: 'easeOut' }}
-          className="w-full mt-5 grid grid-cols-1 lg:grid-cols-12 gap-6"
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+          className="w-full mt-5 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[300px]"
         >
           {/* Left: Metadata */}
           <div className="lg:col-span-7 space-y-4">
