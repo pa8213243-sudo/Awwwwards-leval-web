@@ -233,6 +233,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
         
         {/* 1. TOP-LEFT DASHED BOX: [ ABOUT ] */}
         <motion.div
+          layoutId="hero-card-about"
           initial={{ opacity: 0, x: -30, y: -20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           whileHover={{ scale: 1.08, y: -6 }}
@@ -262,6 +263,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
 
         {/* 2. BOTTOM-LEFT DASHED BOX: [ PRICING ] */}
         <motion.div
+          layoutId="hero-card-pricing"
           initial={{ opacity: 0, x: -30, y: 20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           whileHover={{ scale: 1.08, y: -6 }}
@@ -291,6 +293,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
 
         {/* 3. TOP-RIGHT DASHED BOX: [ PROCESS ] */}
         <motion.div
+          layoutId="hero-card-process"
           initial={{ opacity: 0, x: 30, y: -20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           whileHover={{ scale: 1.08, y: -6 }}
@@ -320,6 +323,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
 
         {/* 4. CENTER-RIGHT LARGE INTERACTIVE BOX: [ WORK SHOWCASE ] */}
         <motion.div
+          layoutId="hero-card-work"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: 1.05, y: -6 }}
@@ -449,6 +453,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
             onClick={handleCloseExpanded}
           >
             <motion.div
+              layoutId={`hero-card-${expandedCard}`}
               initial={{ scale: 0.75, opacity: 0, y: 30 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.75, opacity: 0, y: 30 }}
