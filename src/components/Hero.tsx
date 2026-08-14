@@ -103,6 +103,9 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
   const [isMuted, setIsMuted] = useState(true);
   const [activeHoverCard, setActiveHoverCard] = useState<string | null>(null);
 
+  // A-Lign Studio Card Expansion State
+  const [expandedCard, setExpandedCard] = useState<'about' | 'pricing' | 'process' | 'work' | null>(null);
+
   // Mouse position relative to container for magnetic tag floating
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
@@ -150,6 +153,23 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
     e.stopPropagation();
     soundFx.playClick();
     setActiveSlideIdx(idx);
+  };
+
+  const handleCardClick = (cardType: 'about' | 'pricing' | 'process' | 'work') => {
+    soundFx.playClick();
+    setExpandedCard(cardType);
+  };
+
+  const handleCloseExpanded = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    soundFx.playClick();
+    setExpandedCard(null);
+  };
+
+  const handleConfirmNavigate = (sectionId: string) => {
+    soundFx.playClick();
+    setExpandedCard(null);
+    onNavigate(sectionId);
   };
 
   const currentSlide = WORK_SLIDES[activeSlideIdx];
@@ -211,18 +231,13 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
       {/* ============================================================ */}
       <div className="max-w-7xl mx-auto w-full relative z-10 flex-1 flex items-center justify-center my-6 min-h-[580px] sm:min-h-[640px] lg:min-h-[680px]">
         
-        {/* ---------------------------------------------------------- */}
-        {/* 1. TOP-LEFT DASHED BOX: [ ABOUT ]                          */}
-        {/* ---------------------------------------------------------- */}
+        {/* 1. TOP-LEFT DASHED BOX: [ ABOUT ] */}
         <motion.div
           initial={{ opacity: 0, x: -30, y: -20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           whileHover={{ scale: 1.08, y: -6 }}
           transition={{ type: "spring", stiffness: 450, damping: 28, mass: 0.6 }}
-          onClick={() => {
-            soundFx.playClick();
-            onNavigate('about');
-          }}
+          onClick={() => handleCardClick('about')}
           onMouseEnter={() => {
             soundFx.playHover();
             setActiveHoverCard('about');
@@ -231,48 +246,27 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
           className="absolute left-0 xl:-left-2 top-0 w-28 sm:w-36 md:w-44 lg:w-48 h-36 sm:h-48 md:h-56 lg:h-64 p-2 border-2 border-dashed border-black/25 hover:border-black bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-shadow duration-200 z-10 hover:z-50 will-change-transform"
         >
           <div className="relative w-full h-full overflow-hidden bg-neutral-100">
-            {/* Image with zoom effect on hover */}
             <img
               src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop"
               alt="About Parvej Alam"
               className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-130 group-hover:grayscale-0"
             />
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out will-change-transform scale-100 group-hover:scale-120"
-            >
-              <source
-                src="https://assets.mixkit.co/videos/preview/mixkit-businesswoman-talking-with-a-colleague-in-an-office-42867-large.mp4"
-                type="video/mp4"
-              />
-            </video>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-            
-            {/* Floating Pill Tag */}
             <div className="absolute bottom-2 right-2 bg-black text-white font-mono text-[9px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 uppercase tracking-wider shadow-lg group-hover:bg-[#E0533C] group-hover:scale-110 transition-transform duration-200 will-change-transform">
               ABOUT
             </div>
           </div>
-          {/* Corner Markers */}
           <span className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-black group-hover:scale-110 transition-transform duration-200" />
           <span className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-black group-hover:scale-110 transition-transform duration-200" />
         </motion.div>
 
-        {/* ---------------------------------------------------------- */}
-        {/* 2. BOTTOM-LEFT DASHED BOX: [ PRICING ]                     */}
-        {/* ---------------------------------------------------------- */}
+        {/* 2. BOTTOM-LEFT DASHED BOX: [ PRICING ] */}
         <motion.div
           initial={{ opacity: 0, x: -30, y: 20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           whileHover={{ scale: 1.08, y: -6 }}
           transition={{ type: "spring", stiffness: 450, damping: 28, mass: 0.6 }}
-          onClick={() => {
-            soundFx.playClick();
-            onNavigate('pricing');
-          }}
+          onClick={() => handleCardClick('pricing')}
           onMouseEnter={() => {
             soundFx.playHover();
             setActiveHoverCard('pricing');
@@ -286,21 +280,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
               alt="Pricing & Advisory Engagements"
               className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-130 group-hover:grayscale-0"
             />
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-all duration-200 ease-out will-change-transform scale-100 group-hover:scale-120"
-            >
-              <source
-                src="https://assets.mixkit.co/videos/preview/mixkit-businessman-walking-in-a-building-corridor-42858-large.mp4"
-                type="video/mp4"
-              />
-            </video>
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-            
-            {/* Floating Pill Tag */}
             <div className="absolute bottom-2 right-2 bg-black text-white font-mono text-[9px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 uppercase tracking-wider shadow-lg group-hover:bg-[#E0533C] group-hover:scale-110 transition-transform duration-200 will-change-transform">
               PRICING
             </div>
@@ -309,18 +289,13 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
           <span className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-[#E0533C] group-hover:scale-110 transition-transform duration-200" />
         </motion.div>
 
-        {/* ---------------------------------------------------------- */}
-        {/* 3. TOP-RIGHT DASHED BOX: [ PROCESS ]                       */}
-        {/* ---------------------------------------------------------- */}
+        {/* 3. TOP-RIGHT DASHED BOX: [ PROCESS ] */}
         <motion.div
           initial={{ opacity: 0, x: 30, y: -20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           whileHover={{ scale: 1.08, y: -6 }}
           transition={{ type: "spring", stiffness: 450, damping: 28, mass: 0.6 }}
-          onClick={() => {
-            soundFx.playClick();
-            onNavigate('process');
-          }}
+          onClick={() => handleCardClick('process')}
           onMouseEnter={() => {
             soundFx.playHover();
             setActiveHoverCard('process');
@@ -335,8 +310,6 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
               className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-130 group-hover:grayscale-0"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-            
-            {/* Floating Pill Tag */}
             <div className="absolute bottom-2 right-2 bg-black text-white font-mono text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 uppercase tracking-wider shadow-lg group-hover:bg-emerald-600 group-hover:scale-110 transition-transform duration-200 will-change-transform">
               PROCESS
             </div>
@@ -345,24 +318,16 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
           <span className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-emerald-600 group-hover:scale-110 transition-transform duration-200" />
         </motion.div>
 
-        {/* ---------------------------------------------------------- */}
-        {/* 4. CENTER-RIGHT LARGE INTERACTIVE BOX: [ WORK SHOWCASE ]    */}
-        {/* (Vibrant Blue Backdrop with Live Video & Slide Player)     */}
-        {/* ---------------------------------------------------------- */}
+        {/* 4. CENTER-RIGHT LARGE INTERACTIVE BOX: [ WORK SHOWCASE ] */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: 1.05, y: -6 }}
           transition={{ type: "spring", stiffness: 450, damping: 28, mass: 0.6 }}
-          className="absolute right-0 xl:-right-2 bottom-0 w-[240px] sm:w-[300px] md:w-[360px] lg:w-[400px] h-[190px] sm:h-[240px] md:h-[280px] p-2 sm:p-2.5 border-2 border-dashed border-blue-500/70 hover:border-blue-600 bg-gradient-to-br from-[#1E3A8A] via-[#1D4ED8] to-[#2563EB] shadow-[0_16px_40px_rgba(30,64,175,0.35)] transition-shadow duration-200 z-10 hover:z-50 group will-change-transform"
+          onClick={() => handleCardClick('work')}
+          className="absolute right-0 xl:-right-2 bottom-0 w-[240px] sm:w-[300px] md:w-[360px] lg:w-[400px] h-[190px] sm:h-[240px] md:h-[280px] p-2 sm:p-2.5 border-2 border-dashed border-blue-500/70 hover:border-blue-600 bg-gradient-to-br from-[#1E3A8A] via-[#1D4ED8] to-[#2563EB] shadow-[0_16px_40px_rgba(30,64,175,0.35)] transition-shadow duration-200 z-10 hover:z-50 group cursor-pointer will-change-transform"
         >
-          <div 
-            onClick={() => {
-              soundFx.playClick();
-              onNavigate(currentSlide.projectTargetId);
-            }}
-            className="relative w-full h-full bg-[#0A0A10] border border-white/20 overflow-hidden flex flex-col justify-between cursor-pointer"
-          >
+          <div className="relative w-full h-full bg-[#0A0A10] border border-white/20 overflow-hidden flex flex-col justify-between">
             {/* TOP BAR OF THE INTERACTIVE WORK SCREEN */}
             <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/10 bg-black/60 text-[10px] font-mono text-white/70">
               <div className="flex items-center gap-2">
@@ -378,10 +343,8 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
               </div>
             </div>
 
-            {/* CENTER SLIDE CONTENT WITH VIDEO & ABSTRACT MOTION */}
+            {/* CENTER SLIDE CONTENT */}
             <div className="relative flex-1 w-full overflow-hidden p-3 sm:p-4 flex flex-col justify-center">
-              
-              {/* Embedded Video Player with Zoom on Hover */}
               {currentSlide.type === 'video' && currentSlide.videoUrl && (
                 <video
                   key={currentSlide.id}
@@ -394,8 +357,6 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
                   <source src={currentSlide.videoUrl} type="video/mp4" />
                 </video>
               )}
-
-              {/* Fallback Image */}
               {currentSlide.imageUrl && currentSlide.type !== 'video' && (
                 <img
                   src={currentSlide.imageUrl}
@@ -403,10 +364,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
                   className="absolute inset-0 w-full h-full object-cover opacity-40 filter contrast-125 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-125"
                 />
               )}
-
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
-
-              {/* Slide Text Content */}
               <div className="relative z-10 max-w-xs space-y-1">
                 <span className="text-[9px] sm:text-[10px] font-mono text-blue-300 uppercase tracking-widest font-semibold">
                   [PROJECT 0{activeSlideIdx + 1} / 0{WORK_SLIDES.length}]
@@ -414,15 +372,6 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
                 <h3 className="font-serif text-xs sm:text-sm md:text-base font-bold text-white leading-snug">
                   {currentSlide.headline}
                 </h3>
-                <p className="text-[10px] sm:text-[11px] text-white/80 font-sans line-clamp-2">
-                  {currentSlide.subtext}
-                </p>
-              </div>
-
-              {/* Floating WORK pill */}
-              <div className="absolute bottom-2.5 right-2.5 bg-white text-black font-mono text-[9px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 uppercase tracking-wider shadow-2xl flex items-center gap-1 group-hover:scale-110 group-hover:bg-[#E0533C] group-hover:text-white transition-transform duration-200 will-change-transform z-20">
-                <span>WORK</span>
-                <ChevronRight className="w-3 h-3 text-[#E0533C] group-hover:text-white" />
               </div>
             </div>
 
@@ -441,34 +390,14 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
                   />
                 ))}
               </div>
-
-              <div className="flex items-center gap-2 text-white">
-                <button
-                  onClick={handlePrevSlide}
-                  className="p-1 hover:text-blue-400 transition-colors cursor-pointer"
-                  title="Previous Slide"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  onClick={handleNextSlide}
-                  className="p-1 hover:text-blue-400 transition-colors cursor-pointer"
-                  title="Next Slide"
-                >
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
             </div>
           </div>
           <span className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-blue-600 group-hover:scale-110 transition-transform duration-200" />
           <span className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-blue-600 group-hover:scale-110 transition-transform duration-200" />
         </motion.div>
 
-        {/* ---------------------------------------------------------- */}
-        {/* 5. CENTER FOCAL HEADLINE (UNOBSTRUCTED, HIGH Z-INDEX & CONTRAST) */}
-        {/* ---------------------------------------------------------- */}
+        {/* 5. CENTER FOCAL HEADLINE */}
         <div className="relative z-30 text-center max-w-xl sm:max-w-2xl md:max-w-3xl mx-auto px-4 py-6 sm:py-8 space-y-5 sm:space-y-6 pointer-events-auto">
-          
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -482,14 +411,11 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
                 <span className="absolute left-0 bottom-1 w-full h-[2px] bg-[#E0533C]/40 border-b border-dashed border-[#E0533C]" />
               </span>
             </h1>
-
             <p className="text-xs sm:text-sm font-mono tracking-widest uppercase text-black/80 max-w-lg mx-auto leading-relaxed pt-1 font-semibold">
               WE TAKE YOU FROM STRATEGY TO SUCCESS <br />
               WITH EVERY NUMBER EARNING ITS PLACE
             </p>
           </motion.div>
-
-          {/* Centered Dashed [ GET ALIGNED ] CTA Button */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -497,67 +423,175 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
             className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
           >
             <button
-              onClick={() => {
-                soundFx.playClick();
-                onNavigate('work');
-              }}
+              onClick={() => onNavigate('work')}
               className="px-8 py-3.5 bg-white hover:bg-black text-black hover:text-white border-2 border-dashed border-black/80 hover:border-black font-mono text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer"
             >
               GET ALIGNED
             </button>
-
             <button
-              onClick={() => {
-                soundFx.playClick();
-                onOpenCalculator();
-              }}
+              onClick={onOpenCalculator}
               className="px-6 py-3.5 bg-black hover:bg-neutral-800 text-white border border-black font-mono text-xs font-semibold uppercase tracking-wider flex items-center gap-2 transition-all shadow-md hover:shadow-xl cursor-pointer"
             >
               <Calculator className="w-4 h-4 text-emerald-400" />
               <span>VALUATION LAB</span>
             </button>
           </motion.div>
-
         </div>
-
       </div>
 
-      {/* ------------------------------------------------------------ */}
-      {/* PROFILE CREDENTIAL BAR & STATS (BOTTOM SECTION OF HERO)     */}
-      {/* ------------------------------------------------------------ */}
+      {/* ============================================================ */}
+      {/* A-LIGN STUDIO FULL-SCALE CARD MORPHING EXPANSION MODAL       */}
+      {/* ============================================================ */}
+      <AnimatePresence>
+        {expandedCard && (
+          <div
+            className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-xl flex items-center justify-center p-4 sm:p-8"
+            onClick={handleCloseExpanded}
+          >
+            <motion.div
+              initial={{ scale: 0.75, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.75, opacity: 0, y: 30 }}
+              transition={{ type: "spring", stiffness: 350, damping: 28, mass: 0.6 }}
+              className={`relative w-full max-w-4xl max-h-[85vh] overflow-y-auto p-6 sm:p-10 shadow-[0_30px_90px_rgba(0,0,0,0.9)] border-2 border-dashed rounded-none ${
+                expandedCard === 'work'
+                  ? 'bg-gradient-to-br from-[#1E3A8A] via-[#1D4ED8] to-[#2563EB] text-white border-white/60'
+                  : expandedCard === 'pricing'
+                  ? 'bg-[#14141A] text-white border-white/60'
+                  : expandedCard === 'about'
+                  ? 'bg-[#FAF9F5] text-[#111116] border-black/60'
+                  : 'bg-[#111116] text-white border-emerald-500/60'
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between border-b pb-4 mb-6 border-current/20">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white text-black font-mono text-xs sm:text-sm font-bold px-3 py-1 uppercase tracking-widest shadow-xl border border-black/20">
+                    {expandedCard}
+                  </div>
+                  <span className="font-mono text-xs opacity-75 font-semibold uppercase">
+                    A-LIGN STUDIO // EXPANDED VIEW
+                  </span>
+                </div>
+                <button
+                  onClick={handleCloseExpanded}
+                  className="px-3 py-1.5 bg-black text-white hover:bg-[#E0533C] transition-colors font-mono text-xs font-bold uppercase tracking-wider rounded-none cursor-pointer shadow-md"
+                >
+                  CLOSE [×]
+                </button>
+              </div>
+
+              {expandedCard === 'work' && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="font-serif text-3xl sm:text-5xl font-bold uppercase tracking-tight text-white">
+                      Selected Case Studies & Financial Models
+                    </h2>
+                    <p className="font-sans text-sm sm:text-base text-white/90 mt-2 leading-relaxed">
+                      Explore integrated 3-statement financial workbooks, Power BI telemetry dashboards, and M&A Cap Table engines engineered for corporate execution.
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                    <div className="bg-black/60 p-4 border border-white/20 space-y-2">
+                      <span className="text-[10px] font-mono text-blue-300 font-bold uppercase">FEATURED WORKBOOK</span>
+                      <h4 className="font-serif text-lg font-bold text-white">H2 Ventures — VC Portfolio Model</h4>
+                    </div>
+                    <div className="bg-black/60 p-4 border border-white/20 space-y-2">
+                      <span className="text-[10px] font-mono text-blue-300 font-bold uppercase">POWER BI TELEMETRY</span>
+                      <h4 className="font-serif text-lg font-bold text-white">Executive Revenue & EBITDA Telemetry</h4>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t border-white/20 flex flex-wrap items-center justify-between gap-3">
+                    <span className="font-mono text-xs text-white/80 font-bold">25+ MODELS & 15+ DASHBOARDS VERIFIED</span>
+                    <button
+                      onClick={() => handleConfirmNavigate('work')}
+                      className="px-6 py-3 bg-white text-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-xl cursor-pointer"
+                    >
+                      EXPLORE ALL WORK CASE STUDIES ↵
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {expandedCard === 'pricing' && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="font-serif text-3xl sm:text-5xl font-bold uppercase tracking-tight text-white">
+                      Advisory & Engagement Models
+                    </h2>
+                    <p className="font-sans text-sm sm:text-base text-white/90 mt-2 leading-relaxed">
+                      Flexible retainers, project-based financial modeling, and Power BI corporate telemetry setup.
+                    </p>
+                  </div>
+                  <div className="pt-4 border-t border-white/20 flex flex-wrap items-center justify-between gap-3">
+                    <span className="font-mono text-xs text-gray-400 font-bold">TRANSPARENT ENGAGEMENT TIERS</span>
+                    <button
+                      onClick={() => handleConfirmNavigate('pricing')}
+                      className="px-6 py-3 bg-[#E0533C] text-white font-mono text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all shadow-xl cursor-pointer"
+                    >
+                      VIEW PRICING & ROI SIMULATOR ↵
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {expandedCard === 'about' && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="font-serif text-3xl sm:text-5xl font-bold uppercase tracking-tight text-[#111116]">
+                      The name isn't a coincidence. It's the whole point.
+                    </h2>
+                  </div>
+                  <div className="pt-4 border-t border-black/20 flex flex-wrap items-center justify-between gap-3">
+                    <span className="font-mono text-xs text-black/60 font-bold">VERIFIED CMA USA CREDENTIALS</span>
+                    <button
+                      onClick={() => handleConfirmNavigate('about')}
+                      className="px-6 py-3 bg-black text-white font-mono text-xs font-bold uppercase tracking-widest hover:bg-[#E0533C] transition-all shadow-xl cursor-pointer"
+                    >
+                      READ FULL PROFILE & PRINCIPLES ↵
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {expandedCard === 'process' && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="font-serif text-3xl sm:text-5xl font-bold uppercase tracking-tight text-white">
+                      5-Stage Execution Methodology
+                    </h2>
+                  </div>
+                  <div className="pt-4 border-t border-white/20 flex flex-wrap items-center justify-between gap-3">
+                    <span className="font-mono text-xs text-gray-400 font-bold">5 STAGES TO PRECISION</span>
+                    <button
+                      onClick={() => handleConfirmNavigate('process')}
+                      className="px-6 py-3 bg-emerald-500 text-black font-mono text-xs font-bold uppercase tracking-widest hover:bg-white transition-all shadow-xl cursor-pointer"
+                    >
+                      EXPLORE METHODOLOGY ↵
+                    </button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* PROFILE CREDENTIAL BAR & STATS (BOTTOM SECTION OF HERO) */}
       <div className="max-w-7xl mx-auto w-full relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center bg-white border-2 border-black/15 p-4 sm:p-5 shadow-lg">
-          
           <div className="lg:col-span-5 flex items-center gap-3.5 p-3 bg-neutral-50 border border-black/10">
             <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-emerald-500 flex-shrink-0 shadow-md">
-              <img
-                src="/parvej_profile.png"
-                alt="Parvej Alam Profile"
-                className="w-full h-full object-cover object-top"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  if (target.src.includes('.png')) {
-                    target.src = '/parvej_profile.svg';
-                  }
-                }}
-              />
+              <img src="/parvej_profile.png" alt="Parvej Alam Profile" className="w-full h-full object-cover object-top" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="font-serif text-sm font-bold text-black uppercase">
-                  {PERSONAL_INFO.fullName}
-                </span>
+                <span className="font-serif text-sm font-bold text-black uppercase">{PERSONAL_INFO.fullName}</span>
               </div>
-              <p className="font-mono text-xs text-emerald-700 font-bold mt-0.5">
-                {PERSONAL_INFO.role}
-              </p>
-              <div className="text-[10px] font-mono text-black/60 mt-0.5 font-semibold">
-                CMA USA Part 1 (380/500) • FP&A & BI Engineering
-              </div>
+              <p className="font-mono text-xs text-emerald-700 font-bold mt-0.5">{PERSONAL_INFO.role}</p>
             </div>
           </div>
-
           <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             {PERSONAL_INFO.stats.map((st, i) => (
               <div key={i} className="p-2.5 bg-neutral-50 border border-black/10 text-left">
@@ -566,7 +600,6 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
               </div>
             ))}
           </div>
-
         </div>
       </div>
 
@@ -577,16 +610,8 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
           <span>• 3-STATEMENT FINANCIAL MODELING</span>
           <span className="text-[#E0533C] font-bold">• 1,240,000+ ROWS POWER BI TELEMETRY</span>
           <span>• MONTE CARLO & DCF VALUATION</span>
-          <span className="text-blue-800 font-bold">• POWER QUERY M & DAX SCRIPTING</span>
-          <span>• CAP TABLE DILUTION SCHEDULES</span>
-          <span className="text-amber-800 font-bold">• VARIANCE ANALYSIS & RECONCILIATION</span>
-          <span className="text-emerald-800 font-bold">• CMA PART 1: 380/500 MERIT</span>
-          <span>• 3-STATEMENT FINANCIAL MODELING</span>
-          <span className="text-[#E0533C] font-bold">• 1,240,000+ ROWS POWER BI TELEMETRY</span>
         </div>
       </div>
-
     </section>
   );
 };
-
