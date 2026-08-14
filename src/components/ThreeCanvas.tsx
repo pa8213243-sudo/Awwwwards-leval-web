@@ -86,8 +86,8 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '', varian
     const mesh = new THREE.Mesh(geometry, shaderMaterial);
     scene.add(mesh);
 
-    // FLOATING 3D PARTICLE FIELD
-    const particleCount = variant === 'hero' ? 800 : 500;
+    // FLOATING 3D PARTICLE FIELD (LIGHTWEIGHT FOR 60FPS PERFORMANCE)
+    const particleCount = variant === 'hero' ? 250 : 150;
     const particleGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
 
@@ -123,7 +123,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '', varian
       mouseY = (event.clientY - windowHalfY) * 0.001;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     // RESIZE HANDLER
     const handleResize = () => {
@@ -133,14 +133,30 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '', varian
       renderer.setSize(container.clientWidth, container.clientHeight);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
 
-    // ANIMATION LOOP
+    // ANIMATION LOOP WITH INTERSECTION OBSERVER VISIBILITY PAUSE
     let animationFrameId: number;
+    let isVisibleInViewport = true;
     let clock = new THREE.Clock();
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisibleInViewport = entry.isIntersecting;
+        if (entry.isIntersecting) {
+          clock.start();
+        } else {
+          clock.stop();
+        }
+      },
+      { threshold: 0.05 }
+    );
+    observer.observe(container);
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
+
+      if (!isVisibleInViewport) return;
 
       const elapsedTime = clock.getElapsedTime();
       shaderMaterial.uniforms.uTime.value = elapsedTime;
@@ -149,11 +165,11 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '', varian
       targetX += (mouseX - targetX) * 0.05;
       targetY += (mouseY - targetY) * 0.05;
 
-      mesh.rotation.y = elapsedTime * 0.25 + targetX * 2;
-      mesh.rotation.x = elapsedTime * 0.15 + targetY * 2;
+      mesh.rotation.y = elapsedTime * 0.2 + targetX * 1.5;
+      mesh.rotation.x = elapsedTime * 0.1 + targetY * 1.5;
 
-      particles.rotation.y = -elapsedTime * 0.08 + targetX;
-      particles.rotation.x = elapsedTime * 0.05 + targetY;
+      particles.rotation.y = -elapsedTime * 0.06 + targetX;
+      particles.rotation.x = elapsedTime * 0.04 + targetY;
 
       renderer.render(scene, camera);
     };
@@ -161,6 +177,7 @@ export const ThreeCanvas: React.FC<ThreeCanvasProps> = ({ className = '', varian
     animate();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);

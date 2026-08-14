@@ -24,6 +24,8 @@ export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [glarePosition, setGlarePosition] = useState({ x: 50, y: 50, opacity: 0 });
 
+  const rafIdRef = useRef<number | null>(null);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const card = cardRef.current;
     if (!card) return;
@@ -35,38 +37,47 @@ export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    // 3D Tilt calculation
     const rotateX = ((y - centerY) / centerY) * -maxTilt;
     const rotateY = ((x - centerX) / centerX) * maxTilt;
 
-    // GSAP Magnetic Shift Calculation (subtly shifts card towards cursor position)
     const magX = (x - centerX) * magneticStrength;
     const magY = (y - centerY) * magneticStrength;
 
-    if (wrapperRef.current) {
-      gsap.to(wrapperRef.current, {
-        x: magX,
-        y: magY,
-        duration: 0.35,
-        ease: 'power2.out',
-        overwrite: 'auto',
-      });
-    }
+    if (rafIdRef.current !== null) return;
 
-    setTilt({ x: rotateX, y: rotateY });
-    setGlarePosition({
-      x: (x / rect.width) * 100,
-      y: (y / rect.height) * 100,
-      opacity: glareOpacity,
+    rafIdRef.current = requestAnimationFrame(() => {
+      rafIdRef.current = null;
+
+      if (wrapperRef.current) {
+        gsap.to(wrapperRef.current, {
+          x: magX,
+          y: magY,
+          duration: 0.3,
+          ease: 'power2.out',
+          overwrite: 'auto',
+        });
+      }
+
+      setTilt({ x: rotateX, y: rotateY });
+      setGlarePosition({
+        x: (x / rect.width) * 100,
+        y: (y / rect.height) * 100,
+        opacity: glareOpacity,
+      });
     });
   };
 
   const handleMouseLeave = () => {
+    if (rafIdRef.current !== null) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
+
     if (wrapperRef.current) {
       gsap.to(wrapperRef.current, {
         x: 0,
         y: 0,
-        duration: 0.6,
+        duration: 0.5,
         ease: 'elastic.out(1, 0.4)',
         overwrite: 'auto',
       });

@@ -12,8 +12,10 @@ export const CustomCursor: React.FC = () => {
   const mouseX = useSpring(-100, { damping: 25, stiffness: 300, mass: 0.2 });
   const mouseY = useSpring(-100, { damping: 25, stiffness: 300, mass: 0.2 });
 
+  const hoverRef = React.useRef(false);
+  const textRef = React.useRef('');
+
   useEffect(() => {
-    // Touch detection
     const checkTouch = () => {
       return (
         'ontouchstart' in window ||
@@ -27,6 +29,17 @@ export const CustomCursor: React.FC = () => {
       return;
     }
 
+    const updateCursorState = (nextHover: boolean, nextText: string) => {
+      if (hoverRef.current !== nextHover) {
+        hoverRef.current = nextHover;
+        setIsHovered(nextHover);
+      }
+      if (textRef.current !== nextText) {
+        textRef.current = nextText;
+        setCursorText(nextText);
+      }
+    };
+
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
@@ -34,43 +47,36 @@ export const CustomCursor: React.FC = () => {
       if (!isVisible) setIsVisible(true);
 
       const target = e.target as HTMLElement | null;
-      if (!target) return;
+      if (!target) {
+        updateCursorState(false, '');
+        return;
+      }
 
       // 1. Check for explicit data-cursor
       const cursorTarget = target.closest('[data-cursor]') as HTMLElement | null;
       if (cursorTarget) {
         const text = cursorTarget.getAttribute('data-cursor') || '';
-        setIsHovered(true);
-        setCursorText(text);
+        updateCursorState(true, text);
         return;
       }
 
       // 2. Check for image hover
       const imgTarget = target.closest('img, [data-cursor-image]');
       if (imgTarget) {
-        setIsHovered(true);
-        setCursorText('VIEW');
+        updateCursorState(true, 'VIEW');
         return;
       }
 
       // 3. Check for general interactive elements
       const interactiveTarget = target.closest('a, button, input, textarea, select, [role="button"]');
       if (interactiveTarget) {
-        setIsHovered(true);
-        // Default text for links/buttons if no data-cursor was supplied
-        if (interactiveTarget.tagName === 'A') {
-          setCursorText('OPEN');
-        } else if (interactiveTarget.tagName === 'BUTTON') {
-          setCursorText('');
-        } else {
-          setCursorText('');
-        }
+        const defaultText = interactiveTarget.tagName === 'A' ? 'OPEN' : '';
+        updateCursorState(true, defaultText);
         return;
       }
 
       // Default state when over non-interactive elements
-      setIsHovered(false);
-      setCursorText('');
+      updateCursorState(false, '');
     };
 
     const handleMouseDown = () => setIsClicking(true);

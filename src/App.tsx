@@ -113,51 +113,67 @@ export default function App() {
     };
   }, [isLoading]);
 
-  // Scroll section observer with predictive pre-caching & top progress calculation
+  const activeSectionRef = React.useRef(activeSection);
+  activeSectionRef.current = activeSection;
+
+  // Scroll section observer with RAF throttling & predictive pre-caching
   useEffect(() => {
     if (isLoading) return;
 
+    let rafId: number | null = null;
+
+    const sections = [
+      'home',
+      'chapters',
+      'work',
+      'sandbox',
+      'pricing',
+      'dashboards',
+      'about',
+      'experience',
+      'skills',
+      'certs',
+      'process',
+      'contact',
+    ];
+
     const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (totalHeight > 0) {
-        setTopScrollProgress(window.scrollY / totalHeight);
-      }
+      if (rafId !== null) return;
 
-      const sections = [
-        'home',
-        'chapters',
-        'work',
-        'sandbox',
-        'pricing',
-        'dashboards',
-        'about',
-        'experience',
-        'skills',
-        'certs',
-        'process',
-        'contact',
-      ];
-      const scrollPosition = window.scrollY + 250;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
 
-      for (const sectionId of sections) {
-        const el = document.getElementById(sectionId);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            if (activeSection !== sectionId) {
-              setActiveSection(sectionId);
-              assetPreloader.preloadUpcomingSection(sectionId);
+        const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (totalHeight > 0) {
+          const nextProgress = window.scrollY / totalHeight;
+          setTopScrollProgress((prev) => (Math.abs(prev - nextProgress) > 0.002 ? nextProgress : prev));
+        }
+
+        const scrollPosition = window.scrollY + 250;
+
+        for (const sectionId of sections) {
+          const el = document.getElementById(sectionId);
+          if (el) {
+            const top = el.offsetTop;
+            const height = el.offsetHeight;
+            if (scrollPosition >= top && scrollPosition < top + height) {
+              if (activeSectionRef.current !== sectionId) {
+                setActiveSection(sectionId);
+                assetPreloader.preloadUpcomingSection(sectionId);
+              }
+              break;
             }
-            break;
           }
         }
-      }
+      });
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isLoading, activeSection]);
+    return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isLoading]);
 
   // Global keyboard shortcuts ([G] or ⌘K for command palette, ⌘P for PDF print)
   useEffect(() => {
