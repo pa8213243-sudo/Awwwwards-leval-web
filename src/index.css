@@ -1,0 +1,186 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+:root {
+  /* CENTRAL DESIGN TOKEN SYSTEM */
+  --color-bg-dark: #0A0A0E;
+  --color-bg-card: #121217;
+  --color-accent-orange: #E0533C;
+  --color-accent-emerald: #10B981;
+  --color-accent-blue: #3B82F6;
+  --color-border-subtle: rgba(255, 255, 255, 0.12);
+  --color-text-main: #FFFFFF;
+  --color-text-muted: rgba(255, 255, 255, 0.65);
+
+  /* TYPOGRAPHY SCALES */
+  --font-weight-thin: 300;
+  --font-weight-regular: 400;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* MOTION TIMINGS */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-sine: cubic-bezier(0.37, 0, 0.63, 1);
+}
+
+/* HIGH-CONTRAST LIGHT MODE THEME OVERRIDES */
+.theme-light {
+  --color-bg-dark: #F4F4F0;
+  --color-bg-card: #FFFFFF;
+  --color-border-subtle: rgba(0, 0, 0, 0.15);
+  --color-text-main: #0D0D11;
+  --color-text-muted: rgba(15, 15, 20, 0.7);
+  background-color: #F4F4F0 !important;
+  color: #0D0D11 !important;
+}
+
+.theme-light section {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+
+/* GPU TRANSFORMS & RENDER OPTIMIZATION */
+.gpu-layer {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* CUSTOM SELECTION STYLE */
+::selection {
+  background-color: var(--color-accent-orange);
+  color: #ffffff;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #525252;
+}
+
+/* ADVANCED GRAPHICS: SVG MASK & CLIP PATH UTILITIES */
+.clip-diagonal {
+  clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+}
+
+.clip-badge {
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+}
+
+/* KINETIC MARQUEE ANIMATION */
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee linear infinite;
+  will-change: transform;
+}
+
+/* BRUTALIST ARCHITECTURAL GRID OVERLAY */
+.brutalist-grid {
+  background-size: 60px 60px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+/* ============================================================ */
+/* PRINT & PDF EXPORT STYLESHEET                                */
+/* ============================================================ */
+@page {
+  size: A4 portrait;
+  margin: 10mm 12mm;
+}
+
+@media print {
+  html, body {
+    background-color: #ffffff !important;
+    color: #111116 !important;
+    font-size: 11pt !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide screen-only interactive UI */
+  header,
+  footer,
+  nav,
+  .screen-only,
+  #screen-portfolio-main,
+  .custom-cursor,
+  .floating-nav-dock,
+  .magnetic-button-wrapper,
+  .three-canvas-container,
+  video,
+  canvas {
+    display: none !important;
+  }
+
+  /* Show the dedicated print dossier */
+  #print-portfolio-dossier {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    color: #111116 !important;
+  }
+
+  /* Force elements to avoid awkward page breaks */
+  .break-inside-avoid,
+  section,
+  article,
+  table,
+  tr,
+  pre,
+  blockquote {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  h1, h2, h3, h4 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* Remove all 3D transforms, opacity reductions and animations */
+  * {
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}
+
+
