@@ -71,7 +71,7 @@ export default function App() {
     };
   }, []);
 
-  // Initialize Lenis smooth inertia scroll & ScrollTrigger Mobile Controller
+  // Initialize Lenis smooth inertia scroll
   useEffect(() => {
     if (isLoading) return;
 
@@ -80,34 +80,12 @@ export default function App() {
     // Trigger initial pre-cache for first upcoming sections
     assetPreloader.preloadUpcomingSection('home');
 
-    // ScrollTrigger Mobile Controller Diagnostic Logger
-    const isTouch = isTouchMobileDevice();
-    if (isTouch) {
-      const allTriggers = ScrollTrigger.getAll();
-      allTriggers.forEach((st) => {
-        const triggerEl = st.trigger as HTMLElement | null;
-        const sectionId = triggerEl?.id || triggerEl?.getAttribute('data-section') || 'unnamed-section';
-        
-        ScrollTrigger.create({
-          trigger: triggerEl || document.body,
-          start: 'top bottom',
-          end: 'bottom top',
-          onToggle: (self) => {
-            const isPinned = Boolean(st.pin);
-            const isLocked = isPinned && self.isActive && self.progress > 0 && self.progress < 1;
-            console.debug(
-              `[ScrollTrigger Mobile Controller] [Section: ${sectionId}] isActive: ${self.isActive} | isLocked: ${isLocked} | progress: ${(self.progress * 100).toFixed(1)}%`
-            );
-          },
-        });
-      });
-    }
-
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       ScrollTrigger.refresh();
-    }, 500);
+    }, 400);
 
     return () => {
+      clearTimeout(timer);
       lenis.destroy();
     };
   }, [isLoading]);
