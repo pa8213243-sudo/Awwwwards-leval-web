@@ -1,6 +1,28 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ArrowRight, Sparkles, Code, DollarSign, Briefcase, User, Mail, Home, Volume2, VolumeX, Printer, Layers, Play, Pause } from 'lucide-react';
+import { 
+  X, 
+  ArrowRight, 
+  Sparkles, 
+  Code, 
+  DollarSign, 
+  Briefcase, 
+  User, 
+  Mail, 
+  Home, 
+  Volume2, 
+  VolumeX, 
+  Printer, 
+  Layers, 
+  Play, 
+  Pause,
+  MoreHorizontal,
+  Compass,
+  Cpu,
+  BarChart3,
+  Award,
+  Calculator
+} from 'lucide-react';
 import { ParvejAvatar } from './ParvejAvatar';
 import { useMotionControl } from '../lib/motionControl';
 import { soundFx } from '../lib/sound';
@@ -24,14 +46,20 @@ export const FloatingNavDock: React.FC<FloatingNavDockProps> = ({
   const [isMuted, setIsMuted] = useState(soundFx.isMuted());
   const { isPaused: isMotionPaused, toggle: toggleMotion } = useMotionControl();
 
-  const navLinks = [
-    { id: 'home', label: 'HOME', icon: Home },
-    { id: 'chapters', label: 'CHAPTERS', icon: Layers },
-    { id: 'work', label: 'WORK', icon: Briefcase },
-    { id: 'pricing', label: 'PRICING', icon: DollarSign },
-    { id: 'about', label: 'ABOUT', icon: User },
-    { id: 'process', label: 'PROCESS', icon: Code },
-    { id: 'contact', label: 'CONTACT', icon: Mail },
+  const allSections = [
+    { id: 'home', scene: '01', label: 'HOME & HERO', icon: Home },
+    { id: 'manifesto', scene: '02', label: 'MANIFESTO', icon: Compass },
+    { id: 'chapters', scene: '03', label: 'CHRONOLOGY TIMELINE', icon: Layers },
+    { id: 'work', scene: '04', label: 'SELECTED WORK', icon: Briefcase },
+    { id: 'sandbox', scene: '05', label: 'VALUATION LAB', icon: Calculator },
+    { id: 'pricing', scene: '06', label: 'PRICING & ENGAGEMENT', icon: DollarSign },
+    { id: 'dashboards', scene: '07', label: 'TELEMETRY & DAX', icon: BarChart3 },
+    { id: 'about', scene: '08', label: 'PHILOSOPHY & ABOUT', icon: User },
+    { id: 'experience', scene: '09', label: 'CAREER CHRONOLOGY', icon: Award },
+    { id: 'skills', scene: '10', label: 'SKILL ARCHITECTURE', icon: Cpu },
+    { id: 'certs', scene: '11', label: 'CREDENTIALS & CERTS', icon: Award },
+    { id: 'process', scene: '12', label: '5-STAGE METHODOLOGY', icon: Code },
+    { id: 'contact', scene: '13', label: 'CONTACT & INITIATION', icon: Mail },
   ];
 
   const handleNavClick = (id: string) => {
@@ -90,24 +118,29 @@ export const FloatingNavDock: React.FC<FloatingNavDockProps> = ({
                 </button>
               </div>
 
-              {/* Links Grid */}
-              <div className="space-y-2 mb-6">
-                {navLinks.map((link) => {
+              {/* Links Grid - ALL 13 SECTIONS */}
+              <div className="space-y-1.5 mb-6 max-h-[50vh] overflow-y-auto pr-1">
+                {allSections.map((link) => {
                   const Icon = link.icon;
                   const isActive = activeSection === link.id;
                   return (
                     <button
                       key={link.id}
                       onClick={() => handleNavClick(link.id)}
-                      className={`w-full p-3 border transition-all flex items-center justify-between rounded-xs cursor-pointer ${
+                      className={`w-full p-2.5 border transition-all flex items-center justify-between rounded-xs cursor-pointer ${
                         isActive
                           ? 'border-white bg-white text-black font-semibold'
                           : 'border-white/10 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white'
                       }`}
                       data-cursor={link.label}
                     >
-                      <div className="flex items-center gap-3">
-                        <Icon className={`w-4 h-4 ${isActive ? 'text-black' : 'text-white/40'}`} />
+                      <div className="flex items-center gap-2.5">
+                        <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-none ${
+                          isActive ? 'bg-black text-white' : 'bg-white/10 text-emerald-400'
+                        }`}>
+                          {link.scene}
+                        </span>
+                        <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-black' : 'text-white/40'}`} />
                         <span className="text-xs font-mono tracking-widest uppercase">{link.label}</span>
                       </div>
                       <ArrowRight className={`w-3.5 h-3.5 ${isActive ? 'text-black' : 'text-white/40'}`} />
@@ -117,7 +150,7 @@ export const FloatingNavDock: React.FC<FloatingNavDockProps> = ({
               </div>
 
               {/* Extra Shortcuts */}
-              <div className="pt-4 border-t border-white/10 space-y-2 text-xs font-mono">
+              <div className="pt-3 border-t border-white/10 space-y-2 text-xs font-mono">
                 <button
                   onClick={() => {
                     setIsMenuOpen(false);
@@ -146,10 +179,10 @@ export const FloatingNavDock: React.FC<FloatingNavDockProps> = ({
                       setIsMenuOpen(false);
                       onOpenCopilot();
                     }}
-                    className="flex-1 py-2 px-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xs text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                    data-cursor="AI"
+                    className="flex-1 py-2 px-3 bg-black hover:bg-neutral-900 border border-white/20 text-white rounded-xs text-[11px] uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer font-bold"
+                    data-cursor="AI SARA"
                   >
-                    <Sparkles className="w-3 h-3 text-amber-300" />
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
                     AI SARA
                   </button>
                 </div>
@@ -165,21 +198,22 @@ export const FloatingNavDock: React.FC<FloatingNavDockProps> = ({
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="bg-[#121214]/90 backdrop-blur-xl border border-white/20 p-1.5 rounded-full shadow-2xl flex items-center gap-1.5 sm:gap-2 pointer-events-auto"
+          className="bg-[#111116]/95 backdrop-blur-xl border border-white/20 p-1.5 rounded-full shadow-2xl flex items-center gap-1.5 sm:gap-2 pointer-events-auto"
         >
-          {/* MENU + Toggle */}
+          {/* 3-DOT / MENU ALL SECTIONS LAUNCHER */}
           <button
             onClick={toggleMenu}
             onMouseEnter={() => soundFx.playHover()}
-            className={`px-4 py-2 text-xs font-mono tracking-widest uppercase transition-all rounded-full flex items-center gap-1.5 cursor-pointer ${
+            className={`px-3 sm:px-3.5 py-2 text-xs font-mono tracking-widest uppercase transition-all rounded-full flex items-center gap-1.5 cursor-pointer ${
               isMenuOpen
                 ? 'bg-white text-black font-semibold'
                 : 'bg-white/10 hover:bg-white/20 text-white border border-white/15'
             }`}
-            data-cursor="MENU"
+            title="Open Complete Sections Navigation Directory"
+            data-cursor="ALL SECTIONS"
           >
-            <span>MENU</span>
-            <span className="text-emerald-400 font-bold">{isMenuOpen ? '×' : '+'}</span>
+            <MoreHorizontal className="w-4 h-4 text-emerald-400" />
+            <span className="hidden xs:inline">SECTIONS</span>
           </button>
 
           {/* Central Architectural <a> / Home Logo Button */}
@@ -189,8 +223,8 @@ export const FloatingNavDock: React.FC<FloatingNavDockProps> = ({
               onNavigate('home');
             }}
             onMouseEnter={() => soundFx.playHover()}
-            className="px-3.5 py-1.5 bg-black/60 hover:bg-white text-white hover:text-black border border-white/20 hover:border-white rounded-full font-mono text-xs font-bold tracking-widest transition-all duration-200 cursor-pointer flex items-center gap-1 shadow-md hover:scale-105"
-            title="Return to Architectural Home Grid (ESC)"
+            className="px-3 py-1.5 bg-black hover:bg-white text-white hover:text-black border border-white/20 hover:border-white rounded-full font-mono text-xs font-bold tracking-widest transition-all duration-200 cursor-pointer flex items-center gap-0.5 shadow-md hover:scale-105"
+            title="Return to Top (ESC)"
             data-cursor="<a> HOME"
           >
             <span className="text-[#E0533C]">&lt;</span>
@@ -205,10 +239,25 @@ export const FloatingNavDock: React.FC<FloatingNavDockProps> = ({
               onNavigate('contact');
             }}
             onMouseEnter={() => soundFx.playHover()}
-            className="px-4 sm:px-5 py-2 bg-[#E0533C] hover:bg-[#d0432c] text-white font-mono text-xs font-bold uppercase tracking-widest rounded-full transition-all shadow-md cursor-pointer hover:scale-105"
+            className="px-3.5 sm:px-4 py-2 bg-[#E0533C] hover:bg-[#d0432c] text-white font-mono text-xs font-bold uppercase tracking-widest rounded-full transition-all shadow-md cursor-pointer hover:scale-105"
             data-cursor="CONTACT"
           >
             CONTACT
+          </button>
+
+          {/* FROZEN VISIBLE BLACK AI SARA BUTTON */}
+          <button
+            onClick={() => {
+              soundFx.playClick();
+              onOpenCopilot();
+            }}
+            onMouseEnter={() => soundFx.playHover()}
+            className="px-3.5 sm:px-4 py-2 bg-black hover:bg-neutral-900 text-white border border-white/30 rounded-full font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-xl hover:scale-105 transition-all cursor-pointer"
+            title="Open Parvej AI Sara Strategy Assistant"
+            data-cursor="AI SARA"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+            <span>AI SARA</span>
           </button>
 
           {/* GLOBAL MOTION TOGGLE PILL */}
@@ -220,7 +269,7 @@ export const FloatingNavDock: React.FC<FloatingNavDockProps> = ({
                 ? 'bg-amber-500/20 border-amber-500/40 text-amber-300 hover:bg-amber-500/30'
                 : 'bg-white/5 border-white/10 text-white/60 hover:text-white'
             }`}
-            title={isMotionPaused ? 'Resume Global Entrance Motion' : 'Pause Global Motion for Focused Reading'}
+            title={isMotionPaused ? 'Resume Global Motion' : 'Pause Global Motion'}
             data-cursor={isMotionPaused ? 'RESUME MOTION' : 'PAUSE MOTION'}
           >
             {isMotionPaused ? <Play className="w-3.5 h-3.5 fill-amber-300" /> : <Pause className="w-3.5 h-3.5" />}

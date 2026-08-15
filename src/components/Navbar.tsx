@@ -51,11 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
-          isScrolled
-            ? 'bg-[#F4F1EA]/95 backdrop-blur-md border-b border-black/15 py-3 text-[#111116] shadow-sm'
-            : 'bg-[#F4F1EA]/80 backdrop-blur-sm py-4 text-[#111116] border-b border-black/10'
-        }`}
+        className="absolute top-0 left-0 right-0 z-40 py-4 text-[#111116] border-b border-black/10 bg-[#F3F2EE]/90 backdrop-blur-xs transition-all duration-300"
       >
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
           {/* Personal Brand Logo */}

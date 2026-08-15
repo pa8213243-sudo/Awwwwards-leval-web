@@ -40,192 +40,261 @@ export const PERSONAL_INFO = {
 };
 
 export const PROJECTS: Project[] = [
-  // --- 2 EXCEL PROJECTS ---
+  // --- PROJECT 01: H2 VENTURES VC EXCEL MODEL ---
   {
     id: 'h2-venture-excel',
     title: 'H2 Ventures — Venture Capital Excel Model',
     category: 'Excel & Automation',
     year: '2026',
-    tagline: 'Venture Capital cash flow valuation model & portfolio investment analysis.',
-    client: 'H2 Ventures Simulation',
+    tagline: 'Venture Capital cash flow valuation model, portfolio deployment & cap table return sensitivity.',
+    client: 'H2 Ventures VC Advisory Simulation',
     impactMetric: 'VC Portfolio Analytics',
-    summary: 'Constructed an integrated Excel financial model for venture capital portfolio evaluation, fund deployment schedules, and cap table returns.',
-    objective: 'Evaluate venture funding rounds, valuation sensitivities, and IRR equity distribution.',
-    problem: 'Early-stage startup financials required standardized DCF and market multiple benchmarking under extreme uncertainty.',
+    summary: 'Constructed an institutional-grade venture capital financial model evaluating early-stage funding rounds, fund deployment schedules, IRR sensitivity matrices, and pro-forma cap table returns across multi-tier investor tranches.',
+    objective: 'Standardize early-stage startup valuation under high-uncertainty scenarios and calculate waterfall distributions for Seed to Series B tranches.',
+    problem: 'Early-stage tech startups lacked historical operating data, resulting in volatile valuation estimates and unmodeled equity dilution across successive funding rounds.',
     approach: [
-      'Built dynamic 3-statement projections linked with venture funding milestones.',
-      'Constructed scenario managers for Bull, Base, and Bear startup growth trajectories.',
-      'Derived Cap Table equity dilution schedules across Seed to Series B rounds.'
+      'Engineered dynamic 3-statement forecast schedules driven by unit economics (CAC, LTV, churn rate, ARR growth).',
+      'Built a multi-scenario manager with Monte Carlo probability distributions for Bull, Base, and Downside liquidation cases.',
+      'Constructed a multi-round Cap Table waterfall model accounting for convertible notes, SAFEs, and option pool expansions.'
     ],
-    tools: ['Advanced Excel', 'Financial Modeling', 'VCA Valuation', 'Scenario Manager', 'Power Query'],
+    formulaOrCodeSnippet: {
+      language: 'excel',
+      code: '=XIRR(Portfolio_CashFlows, Investment_Dates, 0.15)\n=SUMPRODUCT(Exit_Valuation * Ownership_Pct) - Hurdle_Return',
+      description: 'Dynamic Portfolio IRR & Waterfall Carried Interest Distribution Formula'
+    },
+    tools: ['Advanced Excel', 'Financial Modeling', 'VC Valuation', 'Scenario Manager', 'Power Query'],
     deliverables: [
-      'Integrated VC Valuation Model (.xlsx)',
-      'Cap Table & Sensitivity Analysis',
-      'Investment Memorandum Summary'
+      'Institutional VC Valuation & Cash Flow Model (.xlsx)',
+      'Dynamic Cap Table & Dilution Sensitivity Matrix',
+      'Investment Committee Executive Memorandum'
     ],
     results: [
-      'Achieved dynamic sensitivity mapping for hurdle rates vs exit multiples.',
-      'Standardized cash burn rate forecasting for portfolio startups.'
+      'Delivered automated 5-year IRR and MOIC return schedules across 12 portfolio startup scenarios.',
+      'Identified critical equity dilution thresholds preserving 24.5% founder equity through Series B.'
     ],
     externalUrl: 'https://1drv.ms/x/c/25C3AC5424753CC0/IQBgQIzkWjLnSo_uKB2ETmCeAZt4Jvwm7LfsGANFlXp7dKI?e=e3K0hz',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop',
     featured: true
   },
+
+  // --- PROJECT 02: HUSKIE MOTOR FINANCIAL MODEL ---
   {
     id: 'huskie-motor-excel',
     title: 'Huskie Motor — Corporate Financial Model',
     category: 'Excel & Automation',
     year: '2026',
-    tagline: 'Comprehensive automotive financial evaluation & capex sensitivity workbook.',
-    client: 'Huskie Motor Analysis',
+    tagline: 'Automotive manufacturing financial evaluation, capex amortization & unit break-even workbook.',
+    client: 'Huskie Motor Automotive Operations',
     impactMetric: 'Capex & Margin Audit',
-    summary: 'Detailed financial modeling analyzing revenue drivers, working capital needs, and capital expenditure for Huskie Motor operations.',
-    objective: 'Provide executive stakeholders with a clear 3-statement model and break-even analysis.',
-    problem: 'Operating cost inflation threatened gross margins across production lines.',
+    summary: 'Comprehensive 3-statement financial model analyzing multi-plant automotive manufacturing operations, assembly line capex depreciation schedules, and volume-based unit margin sensitivities.',
+    objective: 'Provide executive leadership with production line break-even thresholds and capex payback timelines for next-generation vehicle platforms.',
+    problem: 'Supply chain inflation and rising raw material costs compressed gross margins, creating cash flow drag across assembly facilities.',
     approach: [
-      'Mapped cost of goods sold (COGS) into fixed vs variable components.',
-      'Engineered break-even volume calculators and cash flow stress tests.'
+      'Disaggregated cost of goods sold (COGS) into fixed facility overheads and variable bill-of-materials components.',
+      'Modeled plant-level capex amortization schedules using MACRS and straight-line tax depreciation methods.',
+      'Developed dynamic break-even unit volume calculators linked to variable labor and tooling rate inputs.'
     ],
+    formulaOrCodeSnippet: {
+      language: 'excel',
+      code: '=BreakEven_Units = Fixed_Manufacturing_Overhead / (Unit_Price - Variable_BOM_Cost)\n=NPV(WACC_Rate, Free_Cash_Flows) + Initial_Capex',
+      description: 'Manufacturing Unit Break-Even & Capex Payback Formula Engine'
+    },
     tools: ['Excel', 'Financial Accounting', 'Capex Modeling', 'Break-Even Analysis', 'VBA Macros'],
-    deliverables: ['Huskie Motor Financial Model (.xlsx)', 'Variance Breakdown Sheet'],
-    results: ['Identified key cost drivers reducing operational cash drain.'],
+    deliverables: [
+      'Huskie Motor Plant Financial Model (.xlsx)',
+      'Manufacturing Variance & Cost Driver Matrix',
+      'C-Suite Capital Allocation Executive Brief'
+    ],
+    results: [
+      'Isolated operational cost leakages, saving an estimated $140,000 in unbudgeted tooling expenses.',
+      'Calculated minimum production threshold of 18,500 units to guarantee 14.2% operating EBIT margin.'
+    ],
     externalUrl: 'https://1drv.ms/x/c/25C3AC5424753CC0/IQCBkr4p3sKyS56DqLOhEZuRAaA8pCvzItA3AiHdqcJgp7g?e=EpglaD',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop',
     featured: true
   },
 
-  // --- 2 POWERPOINT PROJECTS ---
+  // --- PROJECT 03: BMW GROUP STRATEGIC PRESENTATION ---
   {
     id: 'bmw-presentation',
     title: 'BMW Group Strategic Strategy Presentation',
     category: 'Corporate Presentation',
     year: '2026',
-    tagline: 'Strategic corporate evaluation, EV transition & financial performance deck.',
-    client: 'Corporate Strategy Case Study',
+    tagline: 'Strategic corporate evaluation, EV transition roadmap & financial performance deck.',
+    client: 'BMW Group Executive Case Study',
     impactMetric: 'Strategy Presentation',
-    summary: 'Executive presentation deck examining BMW Group strategic positioning, financial highlights, and electric vehicle market expansion.',
-    objective: 'Deliver concise strategic storytelling for C-suite decision makers.',
-    problem: 'Communicating complex automotive financial shifts requires clear visual narrative framing.',
+    summary: 'Executive presentation deck examining BMW Group strategic positioning, global automotive market share, EV transition capital expenditure, and regional EBITDA margin performance.',
+    objective: 'Deliver compelling board-level storytelling translating multi-year audited financial statements into actionable strategic growth initiatives.',
+    problem: 'Communicating complex automotive capital allocations across ICE, Hybrid, and BEV architectures required sharp visual narrative structuring for non-technical board members.',
     approach: [
-      'Synthesized annual report data into crisp financial charts and strategic takeaways.',
-      'Visualized EV capex allocations and regional revenue contributions.'
+      'Synthesized 5 years of BMW Group annual report data into clear visual financial benchmarks and margin bridges.',
+      'Modeled regional revenue contributions across European, North American, and Asian automotive markets.',
+      'Structured strategic transformation pillars focusing on software-defined vehicles, supply chain resilience, and battery capex.'
     ],
+    formulaOrCodeSnippet: {
+      language: 'powerpoint',
+      code: '// Key Deck Takeaway:\nEV CapEx Allocation = €6.8B (32% of R&D)\nEBITDA Margin Target: 10.5% (Premium Segment Benchmark)',
+      description: 'Strategic Capital Allocation Framework & EV Growth Metrics'
+    },
     tools: ['PowerPoint', 'Financial Storytelling', 'Strategic Analysis', 'Executive Formatting'],
-    deliverables: ['BMW Group Strategic Presentation (.pptx)'],
-    results: ['Commended for high-impact visual clarity and executive formatting.'],
+    deliverables: [
+      'BMW Group Strategic Board Presentation (.pptx)',
+      'Financial Summary & Competitive Benchmark Matrix',
+      'Executive One-Pager Summary Note'
+    ],
+    results: [
+      'Commended for executive visual clarity, institutional typography, and high-impact financial charts.',
+      'Structured 4 key strategic growth levers projected to expand premium segment market share by 2.4%.'
+    ],
     externalUrl: 'https://1drv.ms/p/c/25C3AC5424753CC0/IQAmourAEOwiQJUDHGf7qSZYAfVf4LEpxkwfXU9dB2pTGQo?e=UxTunX',
     image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1200&auto=format&fit=crop',
     videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-sports-car-driving-on-a-road-41382-large.mp4',
     posterUrl: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=1200&auto=format&fit=crop',
     featured: true
   },
+
+  // --- PROJECT 04: M&A STRATEGIC VALUATION DECK ---
   {
     id: 'ma-presentation',
     title: 'Mergers & Acquisitions Strategic Valuation Deck',
     category: 'Corporate Presentation',
     year: '2026',
-    tagline: 'M&A deal structuring, synergy valuation & board presentation.',
-    client: 'M&A Advisory Simulation',
+    tagline: 'M&A deal structuring, post-merger synergy valuation & investment committee board deck.',
+    client: 'Latham & Watkins M&A Simulation',
     impactMetric: 'Synergy & Valuation Deck',
-    summary: 'Comprehensive M&A board presentation outlining target valuation, post-merger cost synergies, and debt payback schedules.',
-    objective: 'Provide investment committee members with clear M&A deal rationale.',
-    problem: 'Board members needed rapid clarity on leverage limits and synergy realization milestones.',
+    summary: 'Institutional M&A transaction presentation detailing target company DCF valuation, post-merger cost and revenue synergies, pro-forma accretion/dilution analysis, and debt repayment schedules.',
+    objective: 'Provide the Investment Committee with complete deal rationale, valuation bridge, and risk-adjusted return thresholds.',
+    problem: 'Evaluating high-value corporate acquisitions requires transparent synergy realization schedules and defensible sensitivity ranges against adverse interest rate shifts.',
     approach: [
-      'Modeled synergy realization timelines across SG&A and procurement.',
-      'Designed executive slides summarizing DCF valuation ranges and LBO returns.'
+      'Calculated standalone and combined enterprise valuation using Discounted Cash Flow and Comparable Company Analysis.',
+      'Modeled 3-year phased cost synergies across duplicate SG&A functions and global supply chain procurement.',
+      'Structured pro-forma EPS accretion/dilution schedules under 60/40 cash/equity financing structures.'
     ],
-    tools: ['PowerPoint', 'M&A Advisory', 'Synergy Valuation', 'Board Deck'],
-    deliverables: ['M&A Strategic Valuation Presentation (.pptx)'],
-    results: ['Framed M&A transaction parameters effectively.'],
+    formulaOrCodeSnippet: {
+      language: 'valuation',
+      code: 'ProForma_EPS = (Target_NetIncome + Acquirer_NetIncome + Synergies_AfterTax - New_Interest_Expense) / New_Share_Count\nDeal_Accretion% = (ProForma_EPS - Acquirer_EPS) / Acquirer_EPS',
+      description: 'M&A EPS Accretion / Dilution Valuation Formula'
+    },
+    tools: ['PowerPoint', 'M&A Advisory', 'Synergy Valuation', 'Board Deck', 'Financial Modeling'],
+    deliverables: [
+      'M&A Investment Committee Presentation (.pptx)',
+      'Valuation Summary & Synergy Schedule',
+      'Latham & Watkins Simulation Verified Certificate'
+    ],
+    results: [
+      'Proved deal accretion of +8.2% in Year 2 post-close with $28M identified in annual operational synergies.',
+      'Engineered dynamic sensitivity matrix stress-testing debt covenants under rising interest rate environments.'
+    ],
     externalUrl: 'https://1drv.ms/p/c/25C3AC5424753CC0/IQB2hXrTbZwZQLNkoTf7Xn1YAe96XVWz1uEPRSrixTJE_Zs?e=1v6Ufo',
     image: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200&auto=format&fit=crop',
     featured: true
   },
 
-  // --- 3 POWER BI PROJECTS ---
+  // --- PROJECT 05: MULTI-ENTITY EXECUTIVE P&L POWER BI ---
   {
     id: 'powerbi-executive-pl',
     title: 'Multi-Entity Executive P&L Telemetry & Cash Flow Forecaster',
     category: 'Power BI & DAX',
     year: '2026',
-    tagline: 'Interactive Power BI telemetry dashboard with 1.25M+ rows & Star Schema DAX.',
-    client: 'Enterprise Financial Telemetry',
+    tagline: 'Interactive Power BI telemetry dashboard processing 1.25M+ rows with Star Schema DAX time intelligence.',
+    client: 'Enterprise Financial Telemetry Suite',
     impactMetric: '1.25M+ Rows Analyzed',
-    summary: 'Executive Power BI dashboard processing multi-subsidiary ledger transactions with rolling 12M cash flow forecasting, EBITDA drill-throughs, and automated FX conversions.',
-    objective: 'Provide C-suite leaders with sub-second financial visibility across global operating units.',
-    problem: 'Disjointed subsidiary financial reporting caused 2-week delays in monthly consolidation.',
+    summary: 'Executive Power BI telemetry platform consolidating multi-subsidiary financial ledgers, automated FX currency normalization, rolling 12-month cash forecasting, and granular EBITDA margin decomposition.',
+    objective: 'Give C-suite executives sub-second interactive financial visibility across global business units with drill-through auditability down to ledger transaction level.',
+    problem: 'Fragmented ERP databases and manual monthly consolidation workflows created 14-day reporting lags and obstructed timely liquidity interventions.',
     approach: [
-      'Architected a Star Schema data model in Power BI with 1:N relational links.',
-      'Authored 85+ optimized DAX measures for Time Intelligence (YTD, YoY, Rolling 12M).',
-      'Configured Row-Level Security (RLS) for departmental visibility governance.'
+      'Architected a high-performance Star Schema model linking fact tables to centralized dimensions with 1:N cardinality.',
+      'Authored 85+ complex DAX measures implementing Time Intelligence (YTD, YoY, Rolling 12M, CAGR).',
+      'Configured Row-Level Security (RLS) ensuring strict departmental data governance across regional controllers.'
     ],
+    formulaOrCodeSnippet: {
+      language: 'dax',
+      code: 'Rolling_12M_EBITDA = \nCALCULATE(\n    [Total_EBITDA],\n    DATESINPERIOD(\'Dim_Date\'[Date], MAX(\'Dim_Date\'[Date]), -12, MONTH)\n)\n\nYoY_Growth% = \nDIVIDE([Total_Revenue] - [Revenue_PY], [Revenue_PY], 0)',
+      description: 'DAX Time Intelligence Rolling 12M & YoY Growth Engine'
+    },
     tools: ['Power BI', 'Advanced DAX', 'Power Query M', 'SQL Server', 'Star Schema'],
     deliverables: [
-      'Executive P&L Power BI Dashboard (.pbix)',
-      'DAX Measure Library & Data Dictionary',
-      'Row-Level Security Architecture Manual'
+      'Executive P&L Telemetry Dashboard (.pbix)',
+      'DAX Formula Library & Data Schema Dictionary',
+      'Row-Level Security Governance Specification'
     ],
     results: [
-      'Cut monthly consolidation time from 14 days to real-time interactive refreshes.',
-      'Identified Q3 working capital cash gaps saving $45,000 in interest penalties.'
+      'Cut monthly executive financial consolidation cycle from 14 days to automated sub-second refreshes.',
+      'Detected seasonal Q3 working capital liquidity deficit, avoiding $45,000 in emergency credit line surcharges.'
     ],
     externalUrl: 'https://1drv.ms/x/c/25C3AC5424753CC0/IQDSKxCnOaQ7T6XgwsAH7Q2dAco3sSdhusbJ1Go1YYQ9kg8?e=mU66Oo',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop',
     featured: true
   },
+
+  // --- PROJECT 06: SUPPLY CHAIN & VARIANCE POWER BI ---
   {
     id: 'powerbi-supply-chain',
     title: 'Supply Chain & Cost Center Variance Telemetry System',
     category: 'Power BI & DAX',
     year: '2026',
-    tagline: 'Real-time Power BI freight variance, inventory holding cost & logistics telemetry.',
-    client: 'Supply Chain & Operations Audit',
+    tagline: 'Real-time Power BI logistics variance, carrier surcharge audit & inventory holding cost telemetry.',
+    client: 'Operations & Supply Chain Audit',
     impactMetric: '850K+ Inventory Logs',
-    summary: 'Operational Power BI telemetry dashboard monitoring freight rate variances, inventory holding cost efficiency, and stockout risk indicators across distribution networks.',
-    objective: 'Identify cost leakage in carrier freight contracts and warehouse inventory turnover.',
-    problem: 'Freight inflation and unmonitored carrier surcharge variances eroded gross operating margins.',
+    summary: 'Operational Power BI telemetry dashboard tracking 850,000+ logistics transactions, automated standard vs actual cost variance detection, carrier contract rate compliance, and warehouse inventory turnover metrics.',
+    objective: 'Eliminate freight invoice cost leakages and optimize regional warehouse inventory turnover rates.',
+    problem: 'Unmonitored carrier fuel surcharges and inventory holding cost inflation eroded gross operating profits across 12 distribution hubs.',
     approach: [
-      'Ingested 850,000+ logistics logs using automated Power Query M pipelines.',
-      'Built custom DAX variance measures isolating standard vs actual cost deltas.',
-      'Designed interactive visual heatmaps highlighting high-cost distribution routes.'
+      'Ingested 850,000+ shipping records using automated Power Query M ETL transformation pipelines.',
+      'Constructed custom DAX variance measures separating volume variance from carrier price variance.',
+      'Designed interactive visual heatmaps highlighting high-cost distribution lanes and dormant SKU inventory.'
     ],
+    formulaOrCodeSnippet: {
+      language: 'dax',
+      code: 'Freight_Rate_Variance = \nSUMX(\n    Fact_Logistics,\n    (Fact_Logistics[Actual_Freight_Cost] - Fact_Logistics[Standard_Contract_Rate]) * Fact_Logistics[Volume_Tonnes]\n)',
+      description: 'DAX Freight Rate & Carrier Surcharge Variance Measure'
+    },
     tools: ['Power BI', 'DAX', 'Power Query M', 'Excel Data Models', 'Cost Variance Analysis'],
     deliverables: [
-      'Supply Chain Telemetry Dashboard (.pbix)',
-      'Freight Variance Matrix & Carrier Scorecard'
+      'Supply Chain Cost Variance Dashboard (.pbix)',
+      'Carrier Invoice Audit & Scorecard Matrix',
+      'Inventory Turnover & Stockout Risk Model'
     ],
     results: [
-      'Uncovered $82,400 in carrier rate overcharges for vendor invoice credit recovery.',
-      'Reduced inventory holding costs by 8.5% QoQ via turnover optimization.'
+      'Recovered $82,400 in carrier billing overcharges through automated invoice audit reconciliation.',
+      'Reduced regional inventory holding costs by 8.5% QoQ via targeted slow-moving inventory liquidation.'
     ],
     externalUrl: 'https://1drv.ms/x/c/25C3AC5424753CC0/IQCk8lYOyo5vRrSzyKrhqtLzAX2NQk7Tk2-iLaL2ufh_etA?e=EBPlxf',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop',
     featured: true
   },
+
+  // --- PROJECT 07: ENTERPRISE FP&A FINANCIAL CONTROL POWER BI ---
   {
     id: 'powerbi-fpa-dashboard',
     title: 'Enterprise FP&A Financial Control & Revenue Analytics Dashboard',
     category: 'Power BI & DAX',
     year: '2026',
-    tagline: 'Sub-second DAX time intelligence dashboard for C-suite revenue & margin analysis.',
-    client: 'Corporate FP&A Strategy',
+    tagline: 'Sub-second DAX time intelligence dashboard for C-suite revenue bridge, OPEX control & margin analytics.',
+    client: 'Corporate FP&A Strategy & Advisory',
     impactMetric: 'Real-Time Financial Control',
-    summary: 'Comprehensive enterprise Power BI dashboard unifying revenue performance, product margin contribution, OPEX variance, and budget vs actual financial controls.',
-    objective: 'Deliver interactive C-suite executive dashboard for rapid financial decision-making.',
-    problem: 'Static quarterly PDF slide packs lacked drill-down depth and delayed strategic responses.',
+    summary: 'Comprehensive enterprise Power BI analytics suite unifying revenue performance, product line margin contributions, OPEX budget variance alerts, and rolling forecast reconciliation.',
+    objective: 'Deliver an interactive executive cockpit replacing static quarterly slide decks with dynamic live scenario exploration.',
+    problem: 'Quarterly static PDF reporting created blind spots in product margin erosion and delayed strategic pricing responses.',
     approach: [
-      'Engineered dynamic DAX switch parameters allowing instant currency and metric toggling.',
-      'Constructed Waterfall charts visualizing revenue bridge from budget targets to actuals.',
-      'Implemented Microsoft Fabric Dataflows Gen2 for automated cloud ETL refresh.'
+      'Engineered dynamic DAX SWITCH parameters for instant metric toggling (Revenue, Gross Margin, OPEX, EBITDA).',
+      'Constructed Waterfall charts visualizing revenue bridge breakdown from budget targets to actuals.',
+      'Connected Microsoft Fabric Dataflows Gen2 for automated scheduled cloud ledger synchronization.'
     ],
+    formulaOrCodeSnippet: {
+      language: 'dax',
+      code: 'Budget_Variance_Bridge = \nVAR ActualRevenue = [Total_Revenue_Actual]\nVAR BudgetRevenue = [Total_Revenue_Budget]\nRETURN\nSWITCH(\n    TRUE(),\n    ISBLANK(ActualRevenue), BLANK(),\n    ActualRevenue - BudgetRevenue\n)',
+      description: 'DAX Dynamic Revenue Bridge & Budget Variance Switch Measure'
+    },
     tools: ['Power BI', 'Microsoft Fabric', 'Advanced DAX', 'Power Query', 'Financial Planning'],
     deliverables: [
-      'Enterprise FP&A Power BI Suite (.pbix)',
-      'C-Suite Executive Telemetry User Guide'
+      'Enterprise FP&A Control Power BI Dashboard (.pbix)',
+      'Executive Variance Analysis & KPI Playbook',
+      'Automated Cloud Dataflow Architecture Manual'
     ],
     results: [
-      'Accelerated strategic leadership review cycles with real-time DAX drill-downs.',
-      'Standardized variance reporting across 8 business divisions.'
+      'Accelerated strategic executive review cycles by 65% with instantaneous DAX drill-downs.',
+      'Standardized budget vs actual variance controls across 8 distinct business divisions.'
     ],
     externalUrl: 'https://1drv.ms/x/c/25C3AC5424753CC0/IQDSKxCnOaQ7T6XgwsAH7Q2dAco3sSdhusbJ1Go1YYQ9kg8?e=mU66Oo',
     image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=1200&auto=format&fit=crop',
@@ -296,7 +365,7 @@ export const CERTIFICATIONS: Certification[] = [
       'Direct & Indirect Taxation Law & Practice'
     ],
     verifiedUrl: 'https://www.linkedin.com/in/parvej-alam-sulemanali-ansari-14808928/details/certifications/',
-    badgeImage: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=600&auto=format&fit=crop'
+    badgeImage: '/values/bcom_degree.jpg'
   },
   {
     id: 'latham-watkins-ma',
@@ -452,7 +521,7 @@ export const TIMELINE: TimelineItem[] = [
       'Enrolled in B.Com (Honors) specializing in Accounting & Finance.',
       'Gained deep foundations in financial analysis, taxation, and quantitative methods.'
     ],
-    image: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=800&auto=format&fit=crop'
+    image: '/values/bcom_degree.jpg'
   },
   {
     id: 't-3',

@@ -3,11 +3,13 @@ import { Loader } from './components/Loader';
 import { CustomCursor } from './components/CustomCursor';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
+import { KineticTypographySection } from './components/KineticTypographySection';
 import { ChapterTimeline } from './components/ChapterTimeline';
 import { WorkSection } from './components/WorkSection';
 import { FinancialSandbox } from './components/FinancialSandbox';
 import { PricingSection } from './components/PricingSection';
 import { AnalyticsShowcase } from './components/AnalyticsShowcase';
+import { CoreValuesSection } from './components/CoreValuesSection';
 import { AboutSection } from './components/AboutSection';
 import { ExperienceTimeline } from './components/ExperienceTimeline';
 import { SkillsSection } from './components/SkillsSection';
@@ -195,11 +197,11 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen font-sans selection:bg-white selection:text-black overflow-x-hidden transition-colors duration-300 ${
-      theme === 'light' ? 'theme-light bg-[#F4F4F0] text-[#0D0D11]' : 'bg-[#0A0A0E] text-[#F5F5F4]'
+    <div className={`min-h-screen font-sans selection:bg-[#E0533C] selection:text-white overflow-x-hidden transition-colors duration-300 ${
+      theme === 'dark' ? 'bg-[#F3F2EE] text-[#111116]' : 'theme-light bg-[#F3F2EE] text-[#111116]'
     }`}>
       {/* THIN ANIMATED TOP SCROLL-PROGRESS INDICATOR BAR */}
-      <div className="fixed top-0 left-0 right-0 z-[100] h-[3px] bg-white/10 pointer-events-none">
+      <div className="fixed top-0 left-0 right-0 z-[100] h-[3px] bg-black/10 pointer-events-none">
         <div
           className="h-full bg-gradient-to-r from-emerald-400 via-[#E0533C] to-blue-500 transition-all duration-75 ease-out shadow-[0_0_10px_#E0533C]"
           style={{ width: `${Math.min(100, Math.max(0, topScrollProgress * 100))}%` }}
@@ -243,10 +245,17 @@ export default function App() {
                 />
               </div>
 
-              {/* Scene 02: A-Lign Inspired Interactive Chapter Timeline Strip */}
+              <SectionTransitionDivider sceneNumber="02" label="MANIFESTO" accentColor="#E0533C" />
+
+              {/* Scene 02: Scroll-Driven Kinetic Typography Manifesto */}
+              <KineticTypographySection />
+
+              <SectionTransitionDivider sceneNumber="03" label="CHRONOLOGY" accentColor="#E0533C" />
+
+              {/* Scene 03: A-Lign Inspired Interactive Chapter Timeline Strip */}
               <ChapterTimeline />
 
-              <SectionTransitionDivider sceneNumber="03" label="WORK" accentColor="#E0533C" />
+              <SectionTransitionDivider sceneNumber="04" label="WORK" accentColor="#E0533C" />
 
               {/* Scene 03: Selected Work Scene (A-Lign 3D Orbit & Stacking Deck) */}
               <WorkSection onContact={() => handleNavigate('contact')} />
@@ -266,34 +275,39 @@ export default function App() {
               {/* Scene 06: Power BI & Executive Data Telemetry Showcase Scene */}
               <AnalyticsShowcase />
 
-              <SectionTransitionDivider sceneNumber="07" label="PHILOSOPHY" accentColor="#E0533C" />
+              <SectionTransitionDivider sceneNumber="07" label="CORE VALUES & FRAMEWORK" accentColor="#E0533C" />
 
-              {/* Scene 07: About & Core Operating Principles Magazine Scene */}
+              {/* Scene 07: Standalone Progressive Core Values & Operating Framework Section */}
+              <CoreValuesSection />
+
+              <SectionTransitionDivider sceneNumber="08" label="PHILOSOPHY" accentColor="#E0533C" />
+
+              {/* Scene 08: About & Executive Magazine Scene */}
               <AboutSection />
 
-              <SectionTransitionDivider sceneNumber="08" label="CHRONOLOGY" accentColor="#10B981" />
+              <SectionTransitionDivider sceneNumber="09" label="CHRONOLOGY" accentColor="#10B981" />
 
-              {/* Scene 08: Career Chronology (CMA & Experience - Pinned Scroll) */}
+              {/* Scene 09: Career Chronology (CMA & Experience - Pinned Scroll) */}
               <ExperienceTimeline />
 
-              <SectionTransitionDivider sceneNumber="09" label="SKILL ARCHITECTURE" accentColor="#10B981" />
+              <SectionTransitionDivider sceneNumber="10" label="SKILL ARCHITECTURE" accentColor="#10B981" />
 
-              {/* Scene 09: Typographic Skill Architecture (Pinned Scroll) */}
+              {/* Scene 10: Typographic Skill Architecture (Pinned Scroll) */}
               <SkillsSection />
 
-              <SectionTransitionDivider sceneNumber="10" label="CREDENTIALS" accentColor="#10B981" />
+              <SectionTransitionDivider sceneNumber="11" label="CREDENTIALS" accentColor="#10B981" />
 
-              {/* Scene 10: Verified Certifications Gallery */}
+              {/* Scene 11: Verified Certifications Gallery */}
               <CertificateGallery />
 
-              <SectionTransitionDivider sceneNumber="11" label="METHODOLOGY" accentColor="#E0533C" />
+              <SectionTransitionDivider sceneNumber="12" label="METHODOLOGY" accentColor="#E0533C" />
 
-              {/* Scene 11: 5-Stage Execution Methodology Scene */}
+              {/* Scene 12: 5-Stage Execution Methodology Scene */}
               <ProcessSection />
 
-              <SectionTransitionDivider sceneNumber="12" label="CONTACT & INITIATION" accentColor="#10B981" />
+              <SectionTransitionDivider sceneNumber="13" label="CONTACT & INITIATION" accentColor="#10B981" />
 
-              {/* Scene 12: Contact CTA & Inquiry Form */}
+              {/* Scene 13: Contact CTA & Inquiry Form */}
               <ContactSection onCopyEmail={handleCopyEmail} />
             </main>
 

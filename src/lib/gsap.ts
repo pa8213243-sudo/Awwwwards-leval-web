@@ -22,9 +22,7 @@ export { gsap, ScrollTrigger, Flip };
  */
 export const isTouchMobileDevice = (): boolean => {
   if (typeof window === 'undefined') return false;
-  const isSmallScreen = window.innerWidth <= 768;
-  const isTouchScreen = ('ontouchstart' in window || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0)) && window.innerWidth <= 1024;
-  return isSmallScreen || isTouchScreen;
+  return window.innerWidth <= 768;
 };
 
 /**

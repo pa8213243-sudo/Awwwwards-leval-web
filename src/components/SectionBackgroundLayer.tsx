@@ -55,8 +55,8 @@ export const SectionBackgroundLayer: React.FC<SectionBackgroundLayerProps> = ({
       className={`absolute inset-0 pointer-events-none select-none overflow-hidden z-0 ${className}`}
       aria-hidden="true"
     >
-      {/* Low-Fidelity Dark Base Placeholder (Prevents Layout Shifts) */}
-      <div className="absolute inset-0 bg-[#08080C]" />
+      {/* Editorial Light Base Placeholder */}
+      <div className="absolute inset-0 bg-[#F3F2EE]" />
 
       {/* High-Resolution Professional Context Image with Lazy Proximity Render */}
       {isVisible && (
@@ -66,26 +66,26 @@ export const SectionBackgroundLayer: React.FC<SectionBackgroundLayerProps> = ({
           loading="lazy"
           decoding="async"
           onLoad={() => setIsLoaded(true)}
-          className={`w-full h-full object-cover filter saturate-125 brightness-95 scale-105 transition-all duration-1000 ease-out ${
+          className={`w-full h-full object-cover filter saturate-100 brightness-105 scale-105 transition-all duration-1000 ease-out ${
             isLoaded ? 'opacity-100' : 'opacity-0 blur-md'
           }`}
-          style={{ opacity: isLoaded ? opacity : 0 }}
+          style={{ opacity: isLoaded ? Math.min(0.08, opacity) : 0 }}
         />
       )}
 
-      {/* Atmospheric Vignette and Seamless Section Blend Gradient */}
+      {/* Atmospheric Vignette and Seamless Editorial Blend Gradient */}
       <div
         className="absolute inset-0 transition-opacity duration-700"
         style={{
-          background: config.overlayGradient || 'radial-gradient(circle at 50% 50%, rgba(10,10,14,0.78) 0%, rgba(10,10,14,0.96) 85%)',
+          background: 'radial-gradient(circle at 50% 50%, rgba(243,242,238,0.82) 0%, rgba(243,242,238,0.97) 85%)',
         }}
       />
 
-      {/* Subtle Fine-Grain / Architectural Mesh Overlay */}
+      {/* Subtle Architectural Dot Mesh Overlay */}
       <div 
-        className="absolute inset-0 opacity-[0.05]"
+        className="absolute inset-0 opacity-[0.08]"
         style={{
-          backgroundImage: `radial-gradient(rgba(255, 255, 255, 0.2) 1px, transparent 0)`,
+          backgroundImage: `radial-gradient(rgba(0, 0, 0, 0.25) 1px, transparent 0)`,
           backgroundSize: '24px 24px',
         }}
       />

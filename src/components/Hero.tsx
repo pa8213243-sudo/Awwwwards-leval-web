@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  ArrowDownRight, 
-  Calculator, 
-  ChevronRight, 
+import {
+  ArrowDownRight,
+  Calculator,
+  ChevronRight,
   ChevronLeft,
-  Award, 
-  TrendingUp, 
-  CheckCircle2, 
+  Award,
+  TrendingUp,
+  CheckCircle2,
   ChevronDown,
   Sparkles,
   Layers,
@@ -96,7 +96,7 @@ const WORK_SLIDES: WorkSlide[] = [
 export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [timeString, setTimeString] = useState('');
-  
+
   // Work Box Slide State
   const [activeSlideIdx, setActiveSlideIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
@@ -105,6 +105,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
 
   // A-Lign Studio Card Expansion State
   const [expandedCard, setExpandedCard] = useState<'about' | 'pricing' | 'process' | 'work' | null>(null);
+  const [isGetAlignedHovered, setIsGetAlignedHovered] = useState(false);
 
   // Mouse position relative to container for magnetic tag floating
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
@@ -178,14 +179,14 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
     <section
       ref={sectionRef}
       id="home"
-      className="relative min-h-screen w-full bg-[#F5F5F2] text-[#111116] pt-20 pb-12 px-4 sm:px-6 md:px-10 flex flex-col justify-between select-none overflow-hidden"
+      className="relative min-h-screen w-full bg-[#F3F2EE] text-[#111116] pt-24 sm:pt-28 pb-12 px-4 sm:px-6 md:px-10 flex flex-col justify-between select-none overflow-hidden"
     >
       {/* ELEGANT FIXED VERTICAL PROGRESS BAR ON RIGHT EDGE */}
       <VerticalSectionProgressBar targetId="home" accentColor="#E0533C" label="ENTRANCE" sectionCode="01" isLightBg={true} />
 
       {/* ARCHITECTURAL DASHED GRID LINES */}
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-30">
-        <div 
+        <div
           className="w-full h-full"
           style={{
             backgroundImage: `
@@ -198,62 +199,42 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
         />
       </div>
 
-      {/* 3D AMBIENT PARTICLES (LIGHT MODE OPTIMIZED) */}
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-20">
+      {/* 3D AMBIENT CHROMATIC GEOMETRY & MULTI-COLOR PARTICLES */}
+      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-85 sm:opacity-95">
         <ThreeCanvas variant="hero" />
-      </div>
-
-      {/* MAIN HUD STRIP */}
-      <div className="max-w-7xl mx-auto w-full relative z-10 pt-2">
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-black/15 pb-3 text-xs font-mono uppercase tracking-widest text-black/75 bg-[#F5F5F2]/90 backdrop-blur-md p-3">
-          <div className="flex items-center gap-3">
-            <ParvejAvatar size="xs" showOnlinePing />
-            <span className="text-black font-semibold flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
-              <span>PARVEJ ALAM // FINANCIAL ARCHITECT & BI ENGINEER</span>
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-2 bg-emerald-100 border border-emerald-600/40 px-3 py-1 text-emerald-900 font-semibold shadow-xs">
-            <Award className="w-3.5 h-3.5 text-emerald-700" />
-            <span>CMA USA PART 1 (SCORE: 380/500)</span>
-          </div>
-
-          <div className="hidden sm:flex items-center gap-2 text-black/60 font-medium">
-            <Compass className="w-3.5 h-3.5 text-blue-600" />
-            <span>{timeString}</span>
-          </div>
-        </div>
       </div>
 
       {/* ============================================================ */}
       {/* CENTER STAGE WITH 4 INTERACTIVE ZOOMABLE BOXES               */}
       {/* ============================================================ */}
       <div className="max-w-7xl mx-auto w-full relative z-10 flex-1 flex items-center justify-center my-6 min-h-[580px] sm:min-h-[640px] lg:min-h-[680px]">
-        
+
         {/* 1. TOP-LEFT DASHED BOX: [ ABOUT ] */}
         <motion.div
           layoutId="hero-card-about"
+          data-cursor="ABOUT"
           initial={{ opacity: 0, x: -30, y: -20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
-          whileHover={{ scale: 1.08, y: -6 }}
-          transition={{ type: "spring", stiffness: 450, damping: 28, mass: 0.6 }}
+          whileHover={{ scale: 1.06, y: -4 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25, mass: 0.6 }}
           onClick={() => handleCardClick('about')}
           onMouseEnter={() => {
             soundFx.playHover();
             setActiveHoverCard('about');
           }}
           onMouseLeave={() => setActiveHoverCard(null)}
-          className="absolute left-0 xl:-left-2 top-0 w-28 sm:w-36 md:w-44 lg:w-48 h-36 sm:h-48 md:h-56 lg:h-64 p-2 border-2 border-dashed border-black/25 hover:border-black bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-shadow duration-200 z-10 hover:z-50 will-change-transform"
+          className="absolute left-0 xl:-left-2 top-0 w-32 sm:w-40 md:w-48 lg:w-56 h-40 sm:h-52 md:h-60 lg:h-72 p-2 border-2 border-dashed border-black/25 hover:border-black bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-all duration-300 z-10 hover:z-50 will-change-transform"
         >
           <div className="relative w-full h-full overflow-hidden bg-neutral-100">
             <img
               src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop"
               alt="About Parvej Alam"
-              className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-130 group-hover:grayscale-0"
+              className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-115 group-hover:grayscale-0"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute bottom-2 right-2 bg-black text-white font-mono text-[9px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 uppercase tracking-wider shadow-lg group-hover:bg-[#E0533C] group-hover:scale-110 transition-transform duration-200 will-change-transform">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none opacity-60 group-hover:opacity-30 transition-opacity duration-300" />
+            
+            {/* A-LIGN EXACT SIGNATURE FLOATING WHITE BUTTON BADGE */}
+            <div className="absolute top-1/2 left-6 -translate-y-1/2 sm:top-auto sm:bottom-4 sm:left-4 sm:translate-y-0 bg-white text-[#111116] border border-black/15 font-mono text-[10px] sm:text-xs font-bold px-3 py-1.5 uppercase tracking-wider shadow-md group-hover:shadow-xl group-hover:scale-105 transition-all duration-300 will-change-transform">
               ABOUT
             </div>
           </div>
@@ -264,26 +245,29 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
         {/* 2. BOTTOM-LEFT DASHED BOX: [ PRICING ] */}
         <motion.div
           layoutId="hero-card-pricing"
+          data-cursor="PRICING"
           initial={{ opacity: 0, x: -30, y: 20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
-          whileHover={{ scale: 1.08, y: -6 }}
-          transition={{ type: "spring", stiffness: 450, damping: 28, mass: 0.6 }}
+          whileHover={{ scale: 1.06, y: -4 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25, mass: 0.6 }}
           onClick={() => handleCardClick('pricing')}
           onMouseEnter={() => {
             soundFx.playHover();
             setActiveHoverCard('pricing');
           }}
           onMouseLeave={() => setActiveHoverCard(null)}
-          className="absolute left-0 xl:-left-2 bottom-0 w-28 sm:w-36 md:w-44 lg:w-48 h-36 sm:h-48 md:h-56 lg:h-64 p-2 border-2 border-dashed border-black/25 hover:border-[#E0533C] bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-shadow duration-200 z-10 hover:z-50 will-change-transform"
+          className="absolute left-0 xl:-left-2 bottom-0 w-32 sm:w-40 md:w-48 lg:w-56 h-40 sm:h-52 md:h-60 lg:h-72 p-2 border-2 border-dashed border-black/25 hover:border-[#E0533C] bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-all duration-300 z-10 hover:z-50 will-change-transform"
         >
           <div className="relative w-full h-full overflow-hidden bg-neutral-100">
             <img
               src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop"
               alt="Pricing & Advisory Engagements"
-              className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-130 group-hover:grayscale-0"
+              className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-115 group-hover:grayscale-0"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute bottom-2 right-2 bg-black text-white font-mono text-[9px] sm:text-xs font-bold px-2.5 py-0.5 sm:px-3 sm:py-1 uppercase tracking-wider shadow-lg group-hover:bg-[#E0533C] group-hover:scale-110 transition-transform duration-200 will-change-transform">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none opacity-60 group-hover:opacity-30 transition-opacity duration-300" />
+            
+            {/* A-LIGN EXACT SIGNATURE FLOATING WHITE BUTTON BADGE */}
+            <div className="absolute bottom-4 left-4 bg-white text-[#111116] border border-black/15 font-mono text-[10px] sm:text-xs font-bold px-3 py-1.5 uppercase tracking-wider shadow-md group-hover:shadow-xl group-hover:scale-105 transition-all duration-300 will-change-transform">
               PRICING
             </div>
           </div>
@@ -294,26 +278,29 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
         {/* 3. TOP-RIGHT DASHED BOX: [ PROCESS ] */}
         <motion.div
           layoutId="hero-card-process"
+          data-cursor="PROCESS"
           initial={{ opacity: 0, x: 30, y: -20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
-          whileHover={{ scale: 1.08, y: -6 }}
-          transition={{ type: "spring", stiffness: 450, damping: 28, mass: 0.6 }}
+          whileHover={{ scale: 1.06, y: -4 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25, mass: 0.6 }}
           onClick={() => handleCardClick('process')}
           onMouseEnter={() => {
             soundFx.playHover();
             setActiveHoverCard('process');
           }}
           onMouseLeave={() => setActiveHoverCard(null)}
-          className="absolute right-0 xl:-right-2 top-0 w-28 sm:w-36 md:w-40 lg:w-44 h-32 sm:h-40 md:h-48 lg:h-52 p-2 border-2 border-dashed border-black/25 hover:border-emerald-600 bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-shadow duration-200 z-10 hover:z-50 hidden sm:block will-change-transform"
+          className="absolute right-0 xl:-right-2 top-0 w-32 sm:w-40 md:w-48 lg:w-52 h-36 sm:h-48 md:h-56 lg:h-64 p-2 border-2 border-dashed border-black/25 hover:border-emerald-600 bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-all duration-300 z-10 hover:z-50 hidden sm:block will-change-transform"
         >
           <div className="relative w-full h-full overflow-hidden bg-neutral-100">
             <img
               src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=800&auto=format&fit=crop"
               alt="Process & Execution"
-              className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-130 group-hover:grayscale-0"
+              className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-115 group-hover:grayscale-0"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute bottom-2 right-2 bg-black text-white font-mono text-[9px] sm:text-[10px] font-bold px-2.5 py-0.5 uppercase tracking-wider shadow-lg group-hover:bg-emerald-600 group-hover:scale-110 transition-transform duration-200 will-change-transform">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none opacity-60 group-hover:opacity-30 transition-opacity duration-300" />
+            
+            {/* A-LIGN EXACT SIGNATURE FLOATING WHITE BUTTON BADGE */}
+            <div className="absolute top-1/2 right-4 -translate-y-1/2 sm:top-auto sm:bottom-4 sm:right-4 sm:translate-y-0 bg-white text-[#111116] border border-black/15 font-mono text-[10px] sm:text-xs font-bold px-3 py-1.5 uppercase tracking-wider shadow-md group-hover:shadow-xl group-hover:scale-105 transition-all duration-300 will-change-transform">
               PROCESS
             </div>
           </div>
@@ -324,12 +311,13 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
         {/* 4. CENTER-RIGHT LARGE INTERACTIVE BOX: [ WORK SHOWCASE ] */}
         <motion.div
           layoutId="hero-card-work"
+          data-cursor="WORK"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.05, y: -6 }}
-          transition={{ type: "spring", stiffness: 450, damping: 28, mass: 0.6 }}
+          whileHover={{ scale: 1.05, y: -4 }}
+          transition={{ type: "spring", stiffness: 400, damping: 25, mass: 0.6 }}
           onClick={() => handleCardClick('work')}
-          className="absolute right-0 xl:-right-2 bottom-0 w-[240px] sm:w-[300px] md:w-[360px] lg:w-[400px] h-[190px] sm:h-[240px] md:h-[280px] p-2 sm:p-2.5 border-2 border-dashed border-blue-500/70 hover:border-blue-600 bg-gradient-to-br from-[#1E3A8A] via-[#1D4ED8] to-[#2563EB] shadow-[0_16px_40px_rgba(30,64,175,0.35)] transition-shadow duration-200 z-10 hover:z-50 group cursor-pointer will-change-transform"
+          className="absolute right-0 xl:-right-2 bottom-0 w-[260px] sm:w-[320px] md:w-[380px] lg:w-[420px] h-[200px] sm:h-[250px] md:h-[290px] p-2 sm:p-2.5 border-2 border-dashed border-black/35 hover:border-blue-600 bg-gradient-to-br from-[#1E3A8A] via-[#1D4ED8] to-[#2563EB] shadow-[0_16px_40px_rgba(30,64,175,0.35)] transition-all duration-300 z-10 hover:z-50 group cursor-pointer will-change-transform"
         >
           <div className="relative w-full h-full bg-[#0A0A10] border border-white/20 overflow-hidden flex flex-col justify-between">
             {/* TOP BAR OF THE INTERACTIVE WORK SCREEN */}
@@ -356,7 +344,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
                   loop
                   muted={isMuted}
                   playsInline
-                  className="absolute inset-0 w-full h-full object-cover opacity-45 filter contrast-125 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-125"
+                  className="absolute inset-0 w-full h-full object-cover opacity-45 filter contrast-125 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-115"
                 >
                   <source src={currentSlide.videoUrl} type="video/mp4" />
                 </video>
@@ -365,7 +353,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
                 <img
                   src={currentSlide.imageUrl}
                   alt={currentSlide.headline}
-                  className="absolute inset-0 w-full h-full object-cover opacity-40 filter contrast-125 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-125"
+                  className="absolute inset-0 w-full h-full object-cover opacity-40 filter contrast-125 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-115"
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
@@ -377,6 +365,11 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
                   {currentSlide.headline}
                 </h3>
               </div>
+
+              {/* A-LIGN EXACT SIGNATURE FLOATING WHITE BUTTON BADGE FOR WORK */}
+              <div className="absolute bottom-3 right-3 bg-white text-[#111116] border border-black/15 font-mono text-[10px] sm:text-xs font-bold px-3 py-1 uppercase tracking-wider shadow-md group-hover:shadow-xl group-hover:scale-105 transition-all duration-300 will-change-transform z-20">
+                WORK
+              </div>
             </div>
 
             {/* BOTTOM SLIDE CONTROLLER RAIL */}
@@ -386,18 +379,17 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
                   <button
                     key={idx}
                     onClick={(e) => handleSelectSlide(idx, e)}
-                    className={`h-1.5 transition-all rounded-full cursor-pointer ${
-                      activeSlideIdx === idx
-                        ? 'w-6 bg-blue-400'
-                        : 'w-2 bg-white/30 hover:bg-white/60'
-                    }`}
+                    className={`h-1.5 transition-all rounded-full cursor-pointer ${activeSlideIdx === idx
+                      ? 'w-6 bg-blue-400'
+                      : 'w-2 bg-white/30 hover:bg-white/60'
+                      }`}
                   />
                 ))}
               </div>
             </div>
           </div>
-          <span className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-blue-600 group-hover:scale-110 transition-transform duration-200" />
-          <span className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-blue-600 group-hover:scale-110 transition-transform duration-200" />
+          <span className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-black group-hover:scale-110 transition-transform duration-200" />
+          <span className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-black group-hover:scale-110 transition-transform duration-200" />
         </motion.div>
 
         {/* 5. CENTER FOCAL HEADLINE */}
@@ -426,15 +418,52 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="pt-2 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
           >
-            <button
-              onClick={() => onNavigate('work')}
-              className="px-8 py-3.5 bg-white hover:bg-black text-black hover:text-white border-2 border-dashed border-black/80 hover:border-black font-mono text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-md hover:shadow-xl cursor-pointer"
+            {/* A-LIGN EXACT SIGNATURE SPLIT-HOVER CTA BUTTON */}
+            <div
+              onMouseEnter={() => {
+                setIsGetAlignedHovered(true);
+                soundFx.playHover();
+              }}
+              onMouseLeave={() => setIsGetAlignedHovered(false)}
+              onClick={() => {
+                soundFx.playClick();
+                onNavigate('work');
+              }}
+              className="border border-dashed border-black/40 hover:border-black/70 p-1 bg-transparent inline-flex items-center transition-all duration-300 cursor-pointer select-none group"
+              data-cursor="GET ALIGNED"
             >
-              GET ALIGNED
-            </button>
+              <div className="flex items-center gap-1 transition-all duration-300">
+                {/* Left Text Block */}
+                <div
+                  className={`px-6 py-2.5 font-mono text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center ${
+                    isGetAlignedHovered
+                      ? 'bg-[#E5E5E5] text-[#111116]'
+                      : 'bg-[#E0533C] text-white'
+                  }`}
+                >
+                  GET ALIGNED
+                </div>
+
+                {/* Right Split Block: slides in on hover with arrow */}
+                <AnimatePresence>
+                  {isGetAlignedHovered && (
+                    <motion.div
+                      initial={{ width: 0, opacity: 0, scale: 0.8 }}
+                      animate={{ width: 34, opacity: 1, scale: 1 }}
+                      exit={{ width: 0, opacity: 0, scale: 0.8 }}
+                      transition={{ type: 'spring', stiffness: 450, damping: 28 }}
+                      className="h-[34px] bg-[#E0533C] text-white flex items-center justify-center overflow-hidden font-bold"
+                    >
+                      <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+
             <button
               onClick={onOpenCalculator}
-              className="px-6 py-3.5 bg-black hover:bg-neutral-800 text-white border border-black font-mono text-xs font-semibold uppercase tracking-wider flex items-center gap-2 transition-all shadow-md hover:shadow-xl cursor-pointer"
+              className="px-6 py-3 bg-black hover:bg-neutral-800 text-white border border-black font-mono text-xs font-semibold uppercase tracking-wider flex items-center gap-2 transition-all shadow-md hover:shadow-xl cursor-pointer"
             >
               <Calculator className="w-4 h-4 text-emerald-400" />
               <span>VALUATION LAB</span>
@@ -458,15 +487,14 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.75, opacity: 0, y: 30 }}
               transition={{ type: "spring", stiffness: 350, damping: 28, mass: 0.6 }}
-              className={`relative w-full max-w-4xl max-h-[85vh] overflow-y-auto p-6 sm:p-10 shadow-[0_30px_90px_rgba(0,0,0,0.9)] border-2 border-dashed rounded-none ${
-                expandedCard === 'work'
-                  ? 'bg-gradient-to-br from-[#1E3A8A] via-[#1D4ED8] to-[#2563EB] text-white border-white/60'
-                  : expandedCard === 'pricing'
+              className={`relative w-full max-w-4xl max-h-[85vh] overflow-y-auto p-6 sm:p-10 shadow-[0_30px_90px_rgba(0,0,0,0.9)] border-2 border-dashed rounded-none ${expandedCard === 'work'
+                ? 'bg-gradient-to-br from-[#1E3A8A] via-[#1D4ED8] to-[#2563EB] text-white border-white/60'
+                : expandedCard === 'pricing'
                   ? 'bg-[#14141A] text-white border-white/60'
                   : expandedCard === 'about'
-                  ? 'bg-[#FAF9F5] text-[#111116] border-black/60'
-                  : 'bg-[#111116] text-white border-emerald-500/60'
-              }`}
+                    ? 'bg-[#FAF9F5] text-[#111116] border-black/60'
+                    : 'bg-[#111116] text-white border-emerald-500/60'
+                }`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between border-b pb-4 mb-6 border-current/20">

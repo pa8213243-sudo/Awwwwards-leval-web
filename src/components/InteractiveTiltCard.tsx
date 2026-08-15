@@ -27,6 +27,8 @@ export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
   const rafIdRef = useRef<number | null>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) return;
+
     const card = cardRef.current;
     if (!card) return;
 

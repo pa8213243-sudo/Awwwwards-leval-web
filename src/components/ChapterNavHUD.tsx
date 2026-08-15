@@ -48,7 +48,7 @@ export const ChapterNavHUD: React.FC<ChapterNavHUDProps> = ({
   return (
     <div className="fixed left-4 top-1/2 -translate-y-1/2 z-40 hidden xl:flex flex-col items-center select-none pointer-events-auto">
       {/* VERTICAL CHAPTER TRACKER */}
-      <div className="p-2.5 bg-[#0C0C10]/80 backdrop-blur-xl border border-white/15 rounded-full flex flex-col items-center gap-3 shadow-2xl">
+      <div className="p-2.5 bg-white/90 backdrop-blur-md border border-black/15 rounded-full flex flex-col items-center gap-3 shadow-md">
         
         {/* Top Mini Index */}
         <div className="text-[9px] font-mono font-bold text-[#E0533C]">
@@ -74,13 +74,13 @@ export const ChapterNavHUD: React.FC<ChapterNavHUDProps> = ({
                 <div
                   className={`transition-all duration-300 rounded-full ${
                     isActive
-                      ? 'w-2 h-4 bg-[#E0533C] shadow-[0_0_8px_#E0533C]'
-                      : 'w-1.5 h-1.5 bg-white/25 group-hover:bg-white/70 group-hover:scale-150'
+                      ? 'w-2 h-4 bg-[#E0533C] shadow-xs'
+                      : 'w-1.5 h-1.5 bg-black/25 group-hover:bg-black/70 group-hover:scale-150'
                   }`}
                 />
 
                 {/* Hover Tooltip */}
-                <div className="absolute left-7 px-2 py-1 bg-[#121217] border border-white/20 text-white font-mono text-[9px] uppercase tracking-widest whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 shadow-xl rounded-xs flex items-center gap-1.5">
+                <div className="absolute left-7 px-2.5 py-1 bg-white border border-black/15 text-[#111116] font-mono text-[9px] uppercase tracking-widest whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 shadow-md rounded-xs flex items-center gap-1.5 z-50">
                   <span className="text-[#E0533C] font-bold">{scene.number}</span>
                   <span>{scene.label}</span>
                 </div>
@@ -90,7 +90,7 @@ export const ChapterNavHUD: React.FC<ChapterNavHUDProps> = ({
         </div>
 
         {/* Bottom Percent Dial */}
-        <div className="text-[8px] font-mono text-white/50 pt-1 border-t border-white/10">
+        <div className="text-[8px] font-mono text-[#555555] font-bold pt-1 border-t border-black/10">
           {scrollPercent}%
         </div>
       </div>

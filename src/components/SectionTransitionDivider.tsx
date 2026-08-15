@@ -102,15 +102,15 @@ export const SectionTransitionDivider: React.FC<SectionTransitionDividerProps> =
       aria-hidden="true"
     >
       {/* Background static faint guide line */}
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-white/[0.04] w-full" />
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] bg-black/10 w-full" />
 
       {/* GSAP Expandable 1px Line from Center */}
       <div
         ref={lineRef}
         className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1px] w-full"
         style={{
-          background: `linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.12) 15%, ${accentColor}88 50%, rgba(255, 255, 255, 0.12) 85%, transparent 100%)`,
-          boxShadow: `0 0 12px ${accentColor}33`,
+          background: `linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.12) 15%, ${accentColor} 50%, rgba(0, 0, 0, 0.12) 85%, transparent 100%)`,
+          boxShadow: `0 0 8px ${accentColor}33`,
         }}
       />
 
@@ -120,10 +120,10 @@ export const SectionTransitionDivider: React.FC<SectionTransitionDividerProps> =
         className="relative z-10 flex items-center justify-center"
       >
         <div
-          className="w-2.5 h-2.5 rotate-45 border bg-[#0A0A0E] flex items-center justify-center transition-all duration-300 shadow-md"
+          className="w-2.5 h-2.5 rotate-45 border bg-white flex items-center justify-center transition-all duration-300 shadow-xs"
           style={{
             borderColor: accentColor,
-            boxShadow: `0 0 8px ${accentColor}66`,
+            boxShadow: `0 0 6px ${accentColor}44`,
           }}
         >
           <div
@@ -137,7 +137,7 @@ export const SectionTransitionDivider: React.FC<SectionTransitionDividerProps> =
       {(label || sceneNumber) && (
         <div
           ref={badgeRef}
-          className="absolute top-1/2 -translate-y-1/2 bg-[#0A0A0E]/90 px-2.5 py-0.5 border border-white/10 font-mono text-[9px] uppercase tracking-widest text-white/50 flex items-center gap-2 backdrop-blur-sm z-20"
+          className="absolute top-1/2 -translate-y-1/2 bg-white px-2.5 py-0.5 border border-black/15 font-mono text-[9px] uppercase tracking-widest text-[#555555] flex items-center gap-2 shadow-xs z-20"
         >
           {sceneNumber && (
             <span className="font-bold" style={{ color: accentColor }}>

@@ -1,10 +1,12 @@
 @import "tailwindcss";
 
+/* stylelint-disable at-rule-no-unknown */
 @theme {
   --font-serif: "Playfair Display", Georgia, serif;
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 }
+/* stylelint-enable at-rule-no-unknown */
 
 :root {
   /* CENTRAL DESIGN TOKEN SYSTEM */
@@ -44,11 +46,26 @@
 }
 
 
+html, body {
+  overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 /* GPU TRANSFORMS & RENDER OPTIMIZATION */
 .gpu-layer {
   transform: translateZ(0);
   will-change: transform, opacity;
   backface-visibility: hidden;
+}
+
+/* Optimize backdrop-filter on mobile screens to save GPU rasterization time */
+@media (max-width: 768px) {
+  .backdrop-blur-xl, .backdrop-blur-lg, .backdrop-blur-md {
+    -webkit-backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(8px) !important;
+  }
 }
 
 /* CUSTOM SELECTION STYLE */
@@ -180,6 +197,27 @@
     transition: none !important;
     box-shadow: none !important;
     text-shadow: none !important;
+  }
+}
+
+/* Custom Modal Case Study Scrollbar */
+.modal-case-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-case-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+.modal-case-scroll::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.6);
+  border-radius: 0px;
+}
+.modal-case-scroll::-webkit-scrollbar-thumb:hover {
+  background: #10B981;
+}
+@supports (scrollbar-width: thin) {
+  .modal-case-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(16, 185, 129, 0.6) rgba(255, 255, 255, 0.08);
   }
 }
 

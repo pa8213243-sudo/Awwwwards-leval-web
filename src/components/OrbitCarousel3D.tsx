@@ -214,123 +214,137 @@ export const OrbitCarousel3D: React.FC<OrbitCarousel3DProps> = ({
         </div>
       </div>
 
-      {/* ── ACTIVE PROJECT DETAIL PANEL (fills empty space below) ── */}
+      {/* ── ACTIVE PROJECT DETAIL PANEL (HIGH CONTRAST CRISP CARD) ── */}
       <AnimatePresence mode="popLayout">
         <motion.div
           key={activeProject.id}
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="w-full mt-5 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[300px]"
+          exit={{ opacity: 0, y: -14 }}
+          transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full mt-6 bg-[#0E0E12] border-2 border-dashed border-black/30 p-6 sm:p-8 rounded-none shadow-2xl text-white relative"
         >
-          {/* Left: Metadata */}
-          <div className="lg:col-span-7 space-y-4">
-            <div>
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <span className="px-2.5 py-1 bg-emerald-500 text-black font-mono text-[10px] font-bold uppercase tracking-wider">
-                  {activeProject.category}
-                </span>
-                <span className="px-2 py-0.5 bg-white/10 text-white/90 border border-white/20 font-mono text-[10px] font-bold">
-                  YEAR: {activeProject.year}
-                </span>
-                <span className="text-emerald-400 font-mono text-[10px] font-bold bg-black/60 px-2 py-0.5 border border-emerald-500/30">
-                  {activeProject.impactMetric}
-                </span>
-              </div>
-              <h3 className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-white uppercase tracking-tight leading-tight">
-                {activeProject.title}
-              </h3>
-              <p className="text-xs font-mono text-emerald-400 font-semibold mt-1">
-                CLIENT / SCOPE: {activeProject.client}
-              </p>
-            </div>
+          {/* Corner Marker Ticks */}
+          <span className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-[#E0533C]" />
+          <span className="absolute -top-1.5 -right-1.5 w-3 h-3 border-t-2 border-r-2 border-[#E0533C]" />
+          <span className="absolute -bottom-1.5 -left-1.5 w-3 h-3 border-b-2 border-l-2 border-[#E0533C]" />
+          <span className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-[#E0533C]" />
 
-            <p className="text-xs sm:text-sm text-white/90 leading-relaxed font-sans bg-black/50 p-3.5 border border-white/10">
-              {activeProject.summary}
-            </p>
-
-            <div className="space-y-2 pl-3 border-l-2 border-[#E0533C] bg-black/30 py-2">
-              <span className="text-[10px] font-mono text-white/50 uppercase font-bold tracking-wider">KEY DELIVERABLES & IMPACT:</span>
-              {activeProject.deliverables.map((del, i) => (
-                <div key={i} className="text-xs font-mono text-white/90 flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>{del}</span>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left: Metadata */}
+            <div className="lg:col-span-7 space-y-4">
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <span className="px-2.5 py-1 bg-emerald-500 text-black font-mono text-[10px] font-bold uppercase tracking-wider shadow-xs">
+                    {activeProject.category}
+                  </span>
+                  <span className="px-2 py-0.5 bg-white/10 text-white border border-white/20 font-mono text-[10px] font-bold">
+                    YEAR: {activeProject.year}
+                  </span>
+                  <span className="text-emerald-400 font-mono text-[10px] font-bold bg-[#18181E] px-2 py-0.5 border border-emerald-500/40">
+                    {activeProject.impactMetric}
+                  </span>
                 </div>
-              ))}
-            </div>
+                <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold text-white uppercase tracking-tight leading-tight">
+                  {activeProject.title}
+                </h3>
+                <p className="text-xs font-mono text-emerald-400 font-bold mt-1 uppercase">
+                  CLIENT / SCOPE: {activeProject.client}
+                </p>
+              </div>
 
-            {activeProject.approach && activeProject.approach.length > 0 && (
-              <div className="space-y-2">
-                <span className="text-[10px] font-mono text-white/50 uppercase font-bold tracking-wider flex items-center gap-2">
-                  <TrendingUp className="w-3.5 h-3.5 text-[#E0533C]" />
-                  STRATEGIC APPROACH:
+              <p className="text-xs sm:text-[13.5px] text-[#EDEDED] leading-relaxed font-sans bg-[#18181E] p-4 border border-white/10 rounded-none shadow-xs">
+                {activeProject.summary}
+              </p>
+
+              <div className="space-y-2 pl-3.5 border-l-2 border-[#E0533C] bg-[#18181E] p-3 rounded-none">
+                <span className="text-[10px] font-mono text-white/60 uppercase font-bold tracking-wider">
+                  KEY DELIVERABLES & IMPACT:
                 </span>
-                {activeProject.approach.map((step, i) => (
-                  <div key={i} className="text-xs font-mono text-white/80 flex items-start gap-2">
-                    <span className="text-[#E0533C] font-bold shrink-0">{String(i + 1).padStart(2, '0')}.</span>
-                    <span>{step}</span>
+                {activeProject.deliverables.map((del, i) => (
+                  <div key={i} className="text-xs font-mono text-[#F0F0F0] flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span>{del}</span>
                   </div>
                 ))}
               </div>
-            )}
 
-            <div className="flex flex-wrap items-center gap-1.5 pt-1">
-              <span className="text-[9px] font-mono text-white/50 uppercase font-bold">TECH STACK:</span>
-              {activeProject.tools.map((t, i) => (
-                <span key={i} className="text-[9px] font-mono text-white/80 bg-white/10 px-2 py-0.5 border border-white/15">#{t}</span>
-              ))}
-            </div>
-          </div>
-
-          {/* Right: Media + Results + Actions */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
-            <div className="w-full h-[200px] sm:h-[230px] rounded-xs border-2 border-white/20 overflow-hidden shadow-xl relative group">
-              <img
-                src={activeProject.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=900&auto=format&fit=crop'}
-                alt={activeProject.title}
-                className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=900&auto=format&fit=crop';
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              <div className="absolute bottom-2.5 right-2.5 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-white shadow-xl" style={{ backgroundColor: '#E0533C' }}>
-                {activeProject.impactMetric}
-              </div>
-            </div>
-
-            {activeProject.results && activeProject.results.length > 0 && (
-              <div className="bg-emerald-950/40 border border-emerald-500/30 p-3.5 space-y-1.5">
-                <span className="text-[10px] font-mono text-emerald-400 uppercase font-bold tracking-wider">RESULTS ACHIEVED:</span>
-                {activeProject.results.map((r, i) => (
-                  <div key={i} className="text-xs font-mono text-white/90 flex items-start gap-2">
-                    <span className="text-emerald-400 font-bold shrink-0">→</span>
-                    <span>{r}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            <div className="flex items-center gap-2.5">
-              {activeProject.externalUrl && (
-                <a
-                  href={activeProject.externalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 py-2.5 px-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-mono text-xs uppercase tracking-wider flex items-center justify-center gap-2 rounded-xs transition-colors"
-                >
-                  <ExternalLink className="w-4 h-4 text-emerald-400" />
-                  <span>LIVE WORKBOOK</span>
-                </a>
+              {activeProject.approach && activeProject.approach.length > 0 && (
+                <div className="space-y-2 pt-1">
+                  <span className="text-[10px] font-mono text-white/60 uppercase font-bold tracking-wider flex items-center gap-2">
+                    <TrendingUp className="w-3.5 h-3.5 text-[#E0533C]" />
+                    STRATEGIC APPROACH:
+                  </span>
+                  {activeProject.approach.map((step, i) => (
+                    <div key={i} className="text-xs font-mono text-[#E0E0E0] flex items-start gap-2">
+                      <span className="text-[#E0533C] font-bold shrink-0">{String(i + 1).padStart(2, '0')}.</span>
+                      <span>{step}</span>
+                    </div>
+                  ))}
+                </div>
               )}
-              <button
-                onClick={() => { soundFx.playClick(); onSelectProject(activeProject); }}
-                className="flex-1 py-2.5 px-4 bg-[#E0533C] hover:bg-[#c94530] text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 rounded-xs shadow-lg transition-all cursor-pointer"
-              >
-                <Maximize2 className="w-4 h-4" />
-                <span>INSPECT CASE</span>
-              </button>
+
+              <div className="flex flex-wrap items-center gap-1.5 pt-2">
+                <span className="text-[9px] font-mono text-white/60 uppercase font-bold">TECH STACK:</span>
+                {activeProject.tools.map((t, i) => (
+                  <span key={i} className="text-[9.5px] font-mono text-white bg-white/10 px-2 py-0.5 border border-white/15">
+                    #{t}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Media + Results + Actions */}
+            <div className="lg:col-span-5 flex flex-col gap-4">
+              <div className="w-full h-[220px] sm:h-[250px] rounded-none border-2 border-white/20 overflow-hidden shadow-xl relative group bg-[#18181E]">
+                <img
+                  src={activeProject.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=900&auto=format&fit=crop'}
+                  alt={activeProject.title}
+                  className="w-full h-full object-cover grayscale contrast-125 group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=900&auto=format&fit=crop';
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                <div className="absolute bottom-2.5 right-2.5 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-white shadow-xl" style={{ backgroundColor: '#E0533C' }}>
+                  {activeProject.impactMetric}
+                </div>
+              </div>
+
+              {activeProject.results && activeProject.results.length > 0 && (
+                <div className="bg-emerald-950/50 border border-emerald-500/40 p-4 space-y-1.5">
+                  <span className="text-[10px] font-mono text-emerald-400 uppercase font-bold tracking-wider">
+                    RESULTS ACHIEVED:
+                  </span>
+                  {activeProject.results.map((r, i) => (
+                    <div key={i} className="text-xs font-mono text-[#F0F0F0] flex items-start gap-2">
+                      <span className="text-emerald-400 font-bold shrink-0">→</span>
+                      <span>{r}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex items-center gap-2.5 pt-1">
+                {activeProject.externalUrl && (
+                  <a
+                    href={activeProject.externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 py-2.5 px-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 rounded-none transition-colors"
+                  >
+                    <ExternalLink className="w-4 h-4 text-emerald-400" />
+                    <span>LIVE WORKBOOK</span>
+                  </a>
+                )}
+                <button
+                  onClick={() => { soundFx.playClick(); onSelectProject(activeProject); }}
+                  className="flex-1 py-2.5 px-4 bg-[#E0533C] hover:bg-[#c94530] text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 rounded-none shadow-lg transition-all cursor-pointer"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                  <span>INSPECT CASE</span>
+                </button>
+              </div>
             </div>
           </div>
         </motion.div>

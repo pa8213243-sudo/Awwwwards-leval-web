@@ -8,33 +8,39 @@ interface StripedTypographyProps {
   isVertical?: boolean;
   className?: string;
   height?: number;
+  isLightBg?: boolean;
 }
 
 export const StripedTypography: React.FC<StripedTypographyProps> = ({
   text,
   progress = 100,
-  color = '#E0533C',
-  unfilledColor = 'rgba(255, 255, 255, 0.18)',
+  color = '#c34531ff',
+  unfilledColor,
   isVertical = false,
   className = '',
+  isLightBg = true,
 }) => {
+  const defaultUnfilled = unfilledColor || (isLightBg ? 'rgba(0, 0, 0, 0.24)' : 'rgba(255, 255, 255, 0.25)');
   const safeId = text.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const basePatternId = `stripes-base-${safeId}`;
-  const activePatternId = `stripes-active-${safeId}`;
-  const maskId = `text-mask-${safeId}`;
+  const basePatternId = `stripes-base-${safeId}-${isVertical ? 'v' : 'h'}-${isLightBg ? 'l' : 'd'}`;
+  const activePatternId = `stripes-active-${safeId}-${isVertical ? 'v' : 'h'}-${isLightBg ? 'l' : 'd'}`;
+  const maskId = `text-mask-${safeId}-${isVertical ? 'v' : 'h'}-${isLightBg ? 'l' : 'd'}`;
   const clampedProgress = Math.max(0, Math.min(100, progress));
 
   if (isVertical) {
     // Vertical striped text: renders vertically along the spine, filling from top to bottom
     const charCount = text.length;
-    const svgHeight = Math.max(380, charCount * 70);
-    const svgWidth = 130;
+    // Balanced proportions: 160px wide by adaptive height so letters are bold, legible, and never clipped
+    const svgWidth = 160;
+    const svgHeight = Math.max(500, charCount * 80);
+    // Well-balanced font size that fits comfortably within the SVG bounding box
+    const targetFontSize = Math.min(130, Math.max(85, Math.floor((svgHeight * 0.88) / (charCount * 0.58))));
 
     return (
-      <div className={`relative inline-block select-none overflow-hidden ${className}`}>
+      <div className={`relative w-full h-full flex items-center justify-center select-none overflow-visible ${className}`}>
         <svg
           viewBox={`0 0 ${svgWidth} ${svgHeight}`}
-          className="w-full h-full max-h-[520px]"
+          className="w-full h-full max-h-[580px]"
           preserveAspectRatio="xMidYMid meet"
         >
           <defs>
@@ -42,22 +48,22 @@ export const StripedTypography: React.FC<StripedTypographyProps> = ({
             <pattern
               id={basePatternId}
               width="100%"
-              height="10"
+              height="12"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="0" y="0" width="100%" height="5.5" fill={unfilledColor} />
-              <rect x="0" y="5.5" width="100%" height="4.5" fill="transparent" />
+              <rect x="0" y="0" width="100%" height="6.5" fill={defaultUnfilled} />
+              <rect x="0" y="6.5" width="100%" height="5.5" fill="transparent" />
             </pattern>
 
             {/* FILLED / ACTIVE VIBRANT COLOR STRIPES */}
             <pattern
               id={activePatternId}
               width="100%"
-              height="10"
+              height="12"
               patternUnits="userSpaceOnUse"
             >
-              <rect x="0" y="0" width="100%" height="5.5" fill={color} />
-              <rect x="0" y="5.5" width="100%" height="4.5" fill="transparent" />
+              <rect x="0" y="0" width="100%" height="6.5" fill={color} />
+              <rect x="0" y="6.5" width="100%" height="5.5" fill="transparent" />
             </pattern>
 
             {/* VERTICAL TEXT MASK */}
@@ -70,10 +76,10 @@ export const StripedTypography: React.FC<StripedTypographyProps> = ({
                 dominantBaseline="central"
                 transform={`rotate(90, ${svgWidth / 2}, ${svgHeight / 2})`}
                 fill="white"
-                fontSize="115"
+                fontSize={targetFontSize}
                 fontWeight="900"
                 fontFamily="'Space Grotesk', 'Playfair Display', Georgia, sans-serif"
-                letterSpacing="0.08em"
+                letterSpacing="0.06em"
               >
                 {text.toLowerCase()}
               </text>
@@ -125,7 +131,7 @@ export const StripedTypography: React.FC<StripedTypographyProps> = ({
             height="12"
             patternUnits="userSpaceOnUse"
           >
-            <rect x="0" y="0" width="100%" height="6.5" fill={unfilledColor} />
+            <rect x="0" y="0" width="100%" height="6.5" fill={defaultUnfilled} />
             <rect x="0" y="6.5" width="100%" height="5.5" fill="transparent" />
           </pattern>
 

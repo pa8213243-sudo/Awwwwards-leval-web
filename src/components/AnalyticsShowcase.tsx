@@ -79,17 +79,17 @@ RETURN DIVIDE(CurrentYTD - PriorYTD, PriorYTD, 0)`,
     if (!section) return;
 
     let lastStage = -1;
-    const isTouch = typeof window !== 'undefined' && (window.innerWidth <= 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0);
+    const isTouch = typeof window !== 'undefined' && window.innerWidth <= 768;
 
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
         trigger: section,
         start: isTouch ? 'top 80%' : 'top top',
-        end: isTouch ? 'bottom 20%' : '+=150%',
+        end: isTouch ? 'bottom 20%' : '+=200%',
         pin: !isTouch,
         pinSpacing: !isTouch,
         pinType: isTouch ? 'transform' : 'fixed',
-        scrub: isTouch ? 0.25 : 0.5,
+        scrub: isTouch ? 0.25 : 0.35,
         anticipatePin: isTouch ? 0 : 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
@@ -141,70 +141,54 @@ RETURN DIVIDE(CurrentYTD - PriorYTD, PriorYTD, 0)`,
   };
 
   return (
-    <section 
-      ref={sectionRef} 
-      id="dashboards" 
-      className="relative w-full min-h-screen bg-[#08080C] text-white border-b border-white/10 select-none overflow-hidden flex flex-col justify-between py-6 md:py-8 px-4 sm:px-6 md:px-12"
+    <section
+      ref={sectionRef}
+      id="dashboards"
+      className="relative w-full min-h-screen bg-[#F3F2EE] text-[#111116] border-b border-black/10 select-none overflow-hidden flex flex-col justify-between py-6 md:py-8 px-4 sm:px-6 md:px-12"
     >
       {/* CONTEXTUAL PROFESSIONAL BACKGROUND PHOTO */}
-      <SectionBackgroundLayer sectionKey="dashboards" opacity={0.4} />
+      <SectionBackgroundLayer sectionKey="dashboards" opacity={0.2} />
 
       {/* ELEGANT FIXED VERTICAL PROGRESS BAR ON RIGHT EDGE */}
-      <VerticalSectionProgressBar targetId="dashboards" accentColor="#3B82F6" label="TELEMETRY" sectionCode="06" />
+      <VerticalSectionProgressBar targetId="dashboards" accentColor="#2563EB" label="TELEMETRY" sectionCode="06" isLightBg={true} />
 
       {/* BACKGROUND 3D TELEMETRY TORUS SHADER */}
-      <div className="absolute inset-0 pointer-events-none z-0 opacity-30">
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-40">
         <ThreeCanvas variant="telemetry" />
       </div>
 
       <div className="max-w-7xl mx-auto w-full my-auto relative z-10 flex flex-col lg:flex-row items-stretch gap-4 lg:gap-6 pt-4">
-        
-        {/* LEFT VERTICAL SECTION SPINE (Vertical Typography & Telemetry Pipeline) */}
-        <div className="hidden md:flex flex-col items-center justify-between py-4 px-2.5 bg-black/85 border border-blue-500/35 backdrop-blur-md flex-shrink-0 z-20 shadow-2xl">
+
+        {/* LEFT VERTICAL SECTION SPINE (Standing Striped Typography Masthead) */}
+        <div className="hidden md:flex flex-col items-center justify-between py-6 px-3 bg-white border-2 border-dashed border-black/25 flex-shrink-0 z-20 shadow-md w-24 md:w-28 min-h-[500px] max-h-[660px] relative">
+          <span className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-blue-600" />
+          <span className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-blue-600" />
+
           {/* Vertical Striped Typography */}
-          <div className="w-12 h-44 flex items-center justify-center overflow-hidden">
+          <div className="flex-1 w-full flex items-center justify-center overflow-hidden py-2">
             <StripedTypography
               text="telemetry"
               progress={scrollProgress}
-              color="#3B82F6"
+              color="#2563EB"
               isVertical={true}
-              className="w-full h-full"
+              isLightBg={true}
+              className="w-full h-full min-h-[420px]"
             />
           </div>
 
-          {/* Vertical Stage Stepper Nodes (01 -> 03) */}
-          <div className="flex flex-col items-center gap-2 my-auto py-2">
-            <div className="w-[1px] h-6 bg-gradient-to-b from-transparent via-blue-500/50 to-blue-500" />
-            {stages.map((st, idx) => (
-              <button
-                key={st.id}
-                onClick={() => handleSelectStage(idx)}
-                className={`w-6 h-6 flex items-center justify-center font-mono text-[10px] font-bold border transition-all cursor-pointer ${
-                  activeStage === idx
-                    ? 'bg-blue-600 text-white border-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.7)] scale-110'
-                    : 'bg-black/60 text-white/50 border-white/20 hover:border-blue-400/50 hover:text-white'
-                }`}
-                title={st.title}
-              >
-                0{idx + 1}
-              </button>
-            ))}
-            <div className="w-[1px] h-6 bg-gradient-to-b from-blue-500 via-blue-500/50 to-transparent" />
-          </div>
-
           {/* Vertical Progress Meter */}
-          <div className="flex flex-col items-center gap-1 pt-1.5 border-t border-white/10 font-mono text-[9px]">
-            <div className="w-1.5 h-10 bg-white/15 overflow-hidden relative">
+          <div className="flex flex-col items-center gap-1.5 pt-3 border-t border-black/10 font-mono text-[9px] w-full">
+            <div className="w-1.5 h-12 bg-black/10 overflow-hidden relative">
               <div
                 className="w-full transition-all duration-150 absolute bottom-0 left-0 right-0"
                 style={{
                   height: `${Math.max(4, scrollProgress)}%`,
-                  backgroundColor: '#3B82F6',
-                  boxShadow: '0 0 6px #3B82F6',
+                  backgroundColor: '#2563EB',
+                  boxShadow: '0 0 6px rgba(37,99,235,0.6)',
                 }}
               />
             </div>
-            <span className="font-bold text-[9px] text-blue-400">
+            <span className="font-bold text-[9px] text-blue-700">
               {scrollProgress}%
             </span>
           </div>
@@ -212,15 +196,15 @@ RETURN DIVIDE(CurrentYTD - PriorYTD, PriorYTD, 0)`,
 
         {/* MAIN DASHBOARD STAGE */}
         <div className="flex-1 flex flex-col justify-between space-y-4">
-          
+
           {/* Top Bar with Stage Details */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/15 pb-3">
             <div>
-              <div className="text-[10px] font-mono text-blue-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+              <div className="text-[10px] font-mono text-blue-700 font-bold uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse" />
                 <span>MICROSOFT POWER BI & DATA MODELING SYSTEM</span>
               </div>
-              <h2 className="font-serif text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-white mt-0.5">
+              <h2 className="font-serif text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-[#111116] mt-0.5">
                 DAX & POWER QUERY ARCHITECTURE
               </h2>
             </div>
@@ -231,39 +215,40 @@ RETURN DIVIDE(CurrentYTD - PriorYTD, PriorYTD, 0)`,
                   soundFx.playClick();
                   setShowHeatmap(!showHeatmap);
                 }}
-                className={`px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center gap-1.5 rounded-none shadow-md ${
-                  showHeatmap
-                    ? 'bg-rose-600 text-white border-rose-400 shadow-[0_0_15px_rgba(225,29,72,0.6)] animate-pulse'
-                    : 'bg-blue-950/80 text-blue-300 border-blue-500/50 hover:bg-blue-900/60'
-                }`}
+                className={`px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider border transition-all cursor-pointer flex items-center gap-1.5 rounded-none shadow-xs ${showHeatmap
+                  ? 'bg-rose-600 text-white border-rose-500 shadow-xs'
+                  : 'bg-white text-blue-800 border-black/15 hover:bg-blue-50'
+                  }`}
                 title="Toggle Data Density Heatmap Overlay to view high-engagement metric zones"
                 data-cursor="HEATMAP"
               >
-                <Flame className={`w-3.5 h-3.5 ${showHeatmap ? 'text-white' : 'text-rose-400'}`} />
+                <Flame className={`w-3.5 h-3.5 ${showHeatmap ? 'text-white' : 'text-rose-600'}`} />
                 <span>{showHeatmap ? 'HEATMAP ON' : 'DATA DENSITY HEATMAP'}</span>
               </button>
 
-              <div className="font-mono text-xs text-blue-400 font-bold px-2.5 py-1 bg-blue-950/60 border border-blue-500/30">
+              <div className="font-mono text-xs text-blue-800 font-bold px-2.5 py-1 bg-blue-50 border border-blue-500/30">
                 STAGE 0{activeStage + 1} / 0{totalStages} ACTIVE
               </div>
             </div>
           </div>
 
-          {/* THREE STAGE SELECTOR TABS WITH GSAP FLIP */}
-          <div ref={tabsContainerRef} className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3">
+          {/* 3 INTERACTIVE TELEMETRY STAGE CARDS */}
+          <div ref={tabsContainerRef} className="grid grid-cols-1 sm:grid-cols-3 gap-3 flex-shrink-0">
             {stages.map((st, idx) => {
               const isActive = activeStage === idx;
               return (
                 <div
-                  key={idx}
+                  key={st.id}
                   onClick={() => handleSelectStage(idx)}
-                  className={`p-3 sm:p-3.5 border transition-all duration-300 cursor-pointer flex items-center gap-3 ${
-                    isActive
-                      ? 'bg-[#12121A] border-2 border-blue-400 text-white shadow-2xl scale-[1.01] ring-1 ring-blue-400/40'
-                      : 'bg-black/50 border-white/10 text-white/60 hover:bg-white/5 hover:text-white'
-                  }`}
+                  className={`p-3 sm:p-3.5 border-2 border-dashed transition-all duration-300 cursor-pointer flex items-center gap-3 relative shadow-sm ${isActive
+                    ? 'bg-white border-blue-600 text-[#111116] shadow-md scale-[1.01]'
+                    : 'bg-white/80 border-black/25 text-[#444444] hover:bg-white hover:text-black hover:border-black/40'
+                    }`}
                 >
-                  <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 overflow-hidden border border-white/20 bg-black">
+                  <span className="absolute -top-1.5 -left-1.5 w-2 h-2 border-t-2 border-l-2 border-black" />
+                  <span className="absolute -bottom-1.5 -right-1.5 w-2 h-2 border-b-2 border-r-2 border-black" />
+
+                  <div className="relative w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0 overflow-hidden border border-black/15 bg-white">
                     <LazyRenderMedia
                       src={st.image}
                       alt={st.title}
@@ -271,19 +256,19 @@ RETURN DIVIDE(CurrentYTD - PriorYTD, PriorYTD, 0)`,
                       accentColor="#2563EB"
                       mediaClassName="hover:scale-110 transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent pointer-events-none z-15" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none z-15" />
                     <span className="absolute bottom-1 left-1 text-[7px] font-mono font-bold bg-blue-600 text-white px-1 py-0.2 uppercase z-20 pointer-events-none">
                       0{idx + 1}
                     </span>
                   </div>
 
                   <div className="flex flex-col justify-between h-full space-y-0.5 flex-1 min-w-0">
-                    <div className="flex items-center justify-between font-mono text-[9px] text-blue-400 font-bold">
+                    <div className="flex items-center justify-between font-mono text-[9px] text-blue-700 font-bold">
                       <span className="truncate">{st.badge}</span>
-                      {isActive && <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />}
+                      {isActive && <CheckCircle2 className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />}
                     </div>
-                    <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-white line-clamp-1">{st.title}</h4>
-                    <p className="text-[10px] font-sans text-white/50 line-clamp-1 leading-tight">{st.detail}</p>
+                    <h4 className="font-mono text-xs font-bold uppercase tracking-wider text-[#111116] line-clamp-1">{st.title}</h4>
+                    <p className="text-[10px] font-sans text-[#555555] line-clamp-1 leading-tight">{st.detail}</p>
                   </div>
                 </div>
               );
@@ -298,11 +283,14 @@ RETURN DIVIDE(CurrentYTD - PriorYTD, PriorYTD, 0)`,
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.25 }}
-              className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center bg-[#101016]/95 backdrop-blur-xl border border-white/15 p-4 sm:p-6 shadow-2xl"
+              className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center bg-white border-2 border-dashed border-black/25 p-4 sm:p-6 shadow-md relative"
             >
+              <span className="absolute -top-1.5 -left-1.5 w-3 h-3 border-t-2 border-l-2 border-black" />
+              <span className="absolute -bottom-1.5 -right-1.5 w-3 h-3 border-b-2 border-r-2 border-black" />
+              
               {/* LEFT: STAGE SPECIFIC TACTILE MEDIA & KPI METRICS */}
               <div className="lg:col-span-7 space-y-3">
-                <div className="relative overflow-hidden border border-white/20 shadow-2xl">
+                <div className="relative overflow-hidden border border-black/15 shadow-xs">
                   <TactileMediaFrame
                     src={currentStageData.image}
                     alt={currentStageData.title}
@@ -346,10 +334,10 @@ RETURN DIVIDE(CurrentYTD - PriorYTD, PriorYTD, 0)`,
                     )}
                   </AnimatePresence>
 
-                  <div className="p-2.5 bg-black/80 border-t border-white/10 flex items-center justify-between">
-                    <h3 className="font-serif text-lg sm:text-xl text-white font-bold">{currentStageData.title}</h3>
+                  <div className="p-2.5 bg-white border-t border-black/10 flex items-center justify-between">
+                    <h3 className="font-serif text-lg sm:text-xl text-[#111116] font-bold">{currentStageData.title}</h3>
                     {showHeatmap && (
-                      <span className="text-[10px] font-mono text-rose-400 font-bold flex items-center gap-1 uppercase">
+                      <span className="text-[10px] font-mono text-rose-600 font-bold flex items-center gap-1 uppercase">
                         <Flame className="w-3 h-3" />
                         ENGAGEMENT DENSITY ACTIVE
                       </span>
@@ -360,10 +348,10 @@ RETURN DIVIDE(CurrentYTD - PriorYTD, PriorYTD, 0)`,
                 {/* KPI METRICS */}
                 <div className="grid grid-cols-3 gap-2">
                   {currentStageData.kpis.map((kpi, kIdx) => (
-                    <div key={kIdx} className="bg-white/5 border border-white/10 p-2.5 font-mono">
-                      <div className="text-[9px] text-white/50 font-bold uppercase">{kpi.label}</div>
-                      <div className="text-sm sm:text-base font-bold text-white mt-0.5">{kpi.value}</div>
-                      <div className="text-[9px] text-emerald-400 font-bold">{kpi.delta}</div>
+                    <div key={kIdx} className="bg-[#F9F9F7] border border-black/10 p-2.5 font-mono">
+                      <div className="text-[9px] text-[#666666] font-bold uppercase">{kpi.label}</div>
+                      <div className="text-sm sm:text-base font-bold text-[#111116] mt-0.5">{kpi.value}</div>
+                      <div className="text-[9px] text-emerald-700 font-bold">{kpi.delta}</div>
                     </div>
                   ))}
                 </div>
@@ -371,7 +359,7 @@ RETURN DIVIDE(CurrentYTD - PriorYTD, PriorYTD, 0)`,
 
               {/* RIGHT: CODE SNIPPET & INSIGHT */}
               <div className="lg:col-span-5 space-y-3">
-                <div className="bg-[#0A0A0E] text-white border border-blue-500/30 p-3 sm:p-4 space-y-2 font-mono shadow-xl">
+                <div className="bg-[#0F172A] text-white border border-blue-500/30 p-3 sm:p-4 space-y-2 font-mono shadow-md">
                   <div className="flex items-center justify-between text-[11px] text-blue-400 font-bold border-b border-white/10 pb-1.5">
                     <div className="flex items-center gap-1.5">
                       <Code2 className="w-3.5 h-3.5 text-blue-400" />
@@ -384,7 +372,7 @@ RETURN DIVIDE(CurrentYTD - PriorYTD, PriorYTD, 0)`,
                     <code>{currentStageData.snippet}</code>
                   </pre>
 
-                  <div className="text-[10px] text-white/70 font-sans border-t border-white/10 pt-2 flex items-start gap-2">
+                  <div className="text-[10.5px] text-slate-300 font-sans border-t border-white/10 pt-2 flex items-start gap-2">
                     <ShieldCheck className="w-4 h-4 text-blue-400 flex-shrink-0 mt-0.5" />
                     <span>{currentStageData.insight}</span>
                   </div>

@@ -121,24 +121,24 @@ export const SectionProgressHeader: React.FC<SectionProgressHeaderProps> = ({
       <div 
         className={`${
           isSticky 
-            ? 'sticky top-14 md:top-16 z-30 bg-[#0A0A0E]/95 backdrop-blur-md border-y border-white/15 py-2 px-4 sm:px-6 md:px-8 mb-4 shadow-lg transition-all' 
-            : 'border-b border-white/15 pb-2 mb-4'
+            ? 'sticky top-14 md:top-16 z-30 bg-[#F3F2EE]/95 backdrop-blur-md border-y border-black/15 py-2 px-4 sm:px-6 md:px-8 mb-4 shadow-xs transition-all' 
+            : 'border-b border-black/15 pb-2 mb-4'
         }`}
       >
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 font-mono text-[10px] sm:text-[11px] uppercase tracking-widest text-white/70">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 font-mono text-[10px] sm:text-[11px] uppercase tracking-widest text-[#555555]">
           <div className="flex items-center gap-2 flex-wrap">
             <span
               className="w-2 h-2 rounded-full flex-shrink-0 transition-opacity"
               style={{ 
                 backgroundColor: accentColor, 
-                boxShadow: `0 0 8px ${accentColor}`,
+                boxShadow: `0 0 6px ${accentColor}`,
                 opacity: progress > 0 ? 1 : 0.3
               }}
             />
-            <span className="font-bold text-white tracking-wider truncate max-w-[180px] sm:max-w-none">{sceneCode}</span>
-            <span className="text-white/40 hidden sm:inline">•</span>
+            <span className="font-bold text-[#111116] tracking-wider truncate max-w-[180px] sm:max-w-none">{sceneCode}</span>
+            <span className="text-[#888888] hidden sm:inline">•</span>
             {/* PROGRESSIVE LIQUID COLOR FILL FOR SECTION NAME */}
-            <div className="hidden md:inline-flex items-center px-1.5 py-0.5 border border-white/15 bg-black/60">
+            <div className="hidden md:inline-flex items-center px-1.5 py-0.5 border border-black/15 bg-white">
               <ProgressiveTextFill
                 text={title}
                 progress={progress}
@@ -165,15 +165,15 @@ export const SectionProgressHeader: React.FC<SectionProgressHeaderProps> = ({
             )}
 
             {/* COMPACT PROGRESS BAR ON ITS LINE */}
-            <div className="flex items-center gap-2 bg-black/80 px-2.5 py-1 border border-white/20 rounded-none shadow-xs">
-              <span className="text-[9px] text-white/50 font-bold hidden xs:inline">PROGRESS</span>
-              <div className="w-12 sm:w-20 md:w-28 h-1.5 bg-white/10 overflow-hidden relative border border-white/20">
+            <div className="flex items-center gap-2 bg-white px-2.5 py-1 border border-black/20 rounded-none shadow-xs">
+              <span className="text-[9px] text-[#666666] font-bold hidden xs:inline">PROGRESS</span>
+              <div className="w-12 sm:w-20 md:w-28 h-1.5 bg-black/10 overflow-hidden relative border border-black/15">
                 <div
                   className="h-full transition-all duration-150"
                   style={{
                     width: `${Math.max(4, progress)}%`,
                     backgroundColor: accentColor,
-                    boxShadow: `0 0 8px ${accentColor}`,
+                    boxShadow: `0 0 6px ${accentColor}`,
                   }}
                 />
               </div>
@@ -192,7 +192,7 @@ export const SectionProgressHeader: React.FC<SectionProgressHeaderProps> = ({
       <div className="space-y-3 px-2 sm:px-0">
         {striped ? (
           <div className="w-full relative">
-            <StripedTypography text={title} color={accentColor} progress={progress} />
+            <StripedTypography text={title} color={accentColor} progress={progress} isLightBg={true} />
           </div>
         ) : (
           <div className="py-1">
@@ -207,8 +207,8 @@ export const SectionProgressHeader: React.FC<SectionProgressHeaderProps> = ({
 
         {/* SUBTITLE IF PROVIDED */}
         {subtitle && (
-          <div className="border-l-2 pl-3 py-0.5 font-mono text-xs text-white/80" style={{ borderColor: accentColor }}>
-            <p className="font-sans text-xs sm:text-sm text-white/80 font-normal leading-relaxed">
+          <div className="border-l-2 pl-3 py-0.5 font-mono text-xs text-[#444444]" style={{ borderColor: accentColor }}>
+            <p className="font-sans text-xs sm:text-sm text-[#444444] font-normal leading-relaxed">
               {subtitle}
             </p>
           </div>

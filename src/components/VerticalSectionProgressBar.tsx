@@ -89,8 +89,8 @@ export const VerticalSectionProgressBar: React.FC<VerticalSectionProgressBarProp
   const activeAnchors = subAnchors || (targetId ? DEFAULT_SUB_ANCHORS[targetId] : undefined) || [];
 
   // If externalProgress is provided, use it directly as the source of truth for high-precision timeline sync
-  const displayProgress = externalProgress !== undefined 
-    ? Math.min(100, Math.max(0, Math.round(externalProgress * 100))) 
+  const displayProgress = externalProgress !== undefined
+    ? Math.min(100, Math.max(0, Math.round(externalProgress * 100)))
     : internalProgress;
 
   useEffect(() => {
@@ -186,7 +186,7 @@ export const VerticalSectionProgressBar: React.FC<VerticalSectionProgressBarProp
     >
       {/* Top Header Tag */}
       <div className="flex flex-col items-center gap-1">
-        <div 
+        <div
           className="font-mono text-[9px] font-bold px-1.5 py-0.5 border shadow-sm backdrop-blur-md transition-colors duration-200 pointer-events-auto"
           style={{
             borderColor: displayProgress > 5 ? accentColor : isLightBg ? 'rgba(0, 0, 0, 0.2)' : 'rgba(255, 255, 255, 0.15)',
@@ -201,7 +201,7 @@ export const VerticalSectionProgressBar: React.FC<VerticalSectionProgressBarProp
 
       {/* Main Center Vertical Rail & Milestone Pips & Anchor Jumps */}
       <div className="flex-1 my-3 flex items-center justify-center relative w-8">
-        
+
         {/* Track Line */}
         <div className={`absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[2px] ${isLightBg ? 'bg-black/15' : 'bg-white/10'} overflow-hidden`}>
           {/* Active Liquid Fill */}
@@ -232,11 +232,10 @@ export const VerticalSectionProgressBar: React.FC<VerticalSectionProgressBarProp
                 title={`${m.pct}%`}
               >
                 <div
-                  className={`w-1.5 h-1.5 rounded-none border transition-all duration-200 ${
-                    isPassed
-                      ? 'scale-110'
-                      : isLightBg ? 'border-black/30 bg-white' : 'border-white/20 bg-black/70'
-                  }`}
+                  className={`w-1.5 h-1.5 rounded-none border transition-all duration-200 ${isPassed
+                    ? 'scale-110'
+                    : isLightBg ? 'border-black/30 bg-white' : 'border-white/20 bg-black/70'
+                    }`}
                   style={{
                     backgroundColor: isPassed ? accentColor : isLightBg ? '#FFFFFF' : 'rgba(0,0,0,0.6)',
                     borderColor: isPassed ? accentColor : isLightBg ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.25)',
@@ -267,11 +266,10 @@ export const VerticalSectionProgressBar: React.FC<VerticalSectionProgressBarProp
                 >
                   <button
                     onClick={(e) => handleAnchorClick(anchor, e)}
-                    className={`relative w-4 h-4 flex items-center justify-center rounded-full transition-all duration-200 cursor-pointer ${
-                      isActive
-                        ? 'scale-125'
-                        : 'scale-90 hover:scale-110'
-                    }`}
+                    className={`relative w-4 h-4 flex items-center justify-center rounded-full transition-all duration-200 cursor-pointer ${isActive
+                      ? 'scale-125'
+                      : 'scale-90 hover:scale-110'
+                      }`}
                     title={`Jump to: ${anchor.label}`}
                     aria-label={`Jump to sub-section: ${anchor.label}`}
                   >
@@ -316,13 +314,13 @@ export const VerticalSectionProgressBar: React.FC<VerticalSectionProgressBarProp
 
         {/* Vertical Editorial Label */}
         {label && (
-          <div 
+          <div
             className="absolute left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[8px] uppercase tracking-[0.25em] font-semibold transition-opacity duration-200 pointer-events-none"
             style={{
               writingMode: 'vertical-rl',
               transform: 'translateX(-50%) rotate(180deg)',
-              color: displayProgress > 10 
-                ? (isLightBg ? 'rgba(0, 0, 0, 0.85)' : 'rgba(255, 255, 255, 0.7)') 
+              color: displayProgress > 10
+                ? (isLightBg ? 'rgba(0, 0, 0, 0.85)' : 'rgba(255, 255, 255, 0.7)')
                 : (isLightBg ? 'rgba(0, 0, 0, 0.35)' : 'rgba(255, 255, 255, 0.3)'),
             }}
           >
