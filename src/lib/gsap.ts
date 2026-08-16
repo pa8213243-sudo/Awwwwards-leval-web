@@ -211,6 +211,31 @@ export function initMagazineReveal(
   return () => ctx.revert();
 }
 
+let globalLenisInstance: Lenis | null = null;
+
+/**
+ * Freeze or unfreeze the smooth inertia scroll engine (used when drawers/modals open)
+ */
+export function setLenisScrollLocked(locked: boolean): void {
+  if (typeof document !== 'undefined') {
+    if (locked) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.classList.add('overflow-hidden');
+      if (globalLenisInstance) {
+        globalLenisInstance.stop();
+      }
+    } else {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.classList.remove('overflow-hidden');
+      if (globalLenisInstance) {
+        globalLenisInstance.start();
+      }
+    }
+  }
+}
+
 /**
  * Initializes ultra-smooth inertia scrolling via Lenis with optimized tick sync
  */
@@ -227,6 +252,8 @@ export function initSmoothScroll(): Lenis {
     touchMultiplier: 1.2,
     infinite: false,
   });
+
+  globalLenisInstance = lenis;
 
   lenis.on('scroll', ScrollTrigger.update);
 

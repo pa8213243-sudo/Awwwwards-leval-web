@@ -29,6 +29,7 @@ import { ParvejAvatar } from './ParvejAvatar';
 import { VerticalSectionProgressBar } from './VerticalSectionProgressBar';
 import { gsap } from '../lib/gsap';
 import { soundFx } from '../lib/sound';
+import parvejProfileImg from './parvej_profile.png';
 
 interface HeroProps {
   onNavigate: (sectionId: string) => void;
@@ -158,7 +159,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
 
   const handleCardClick = (cardType: 'about' | 'pricing' | 'process' | 'work') => {
     soundFx.playClick();
-    setExpandedCard(cardType);
+    onNavigate(cardType);
   };
 
   const handleCloseExpanded = (e?: React.MouseEvent) => {
@@ -216,25 +217,41 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
           initial={{ opacity: 0, x: -30, y: -20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           whileHover={{ scale: 1.06, y: -4 }}
+          whileTap={{ scale: 0.96 }}
           transition={{ type: "spring", stiffness: 400, damping: 25, mass: 0.6 }}
           onClick={() => handleCardClick('about')}
+          onTouchStart={() => {
+            soundFx.playHover();
+            setActiveHoverCard('about');
+          }}
+          onTouchEnd={() => {
+            setTimeout(() => setActiveHoverCard(null), 1200);
+          }}
           onMouseEnter={() => {
             soundFx.playHover();
             setActiveHoverCard('about');
           }}
           onMouseLeave={() => setActiveHoverCard(null)}
-          className="absolute left-0 xl:-left-2 top-0 w-32 sm:w-40 md:w-48 lg:w-56 h-40 sm:h-52 md:h-60 lg:h-72 p-2 border-2 border-dashed border-black/25 hover:border-black bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-all duration-300 z-10 hover:z-50 will-change-transform"
+          className={`absolute left-0 xl:-left-2 top-0 w-32 sm:w-40 md:w-48 lg:w-56 h-40 sm:h-52 md:h-60 lg:h-72 p-2 border-2 border-dashed ${
+            activeHoverCard === 'about' ? 'border-black shadow-2xl scale-[1.03]' : 'border-black/25'
+          } hover:border-black bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-all duration-300 z-10 hover:z-50 will-change-transform touch-pan-y`}
         >
           <div className="relative w-full h-full overflow-hidden bg-neutral-100">
             <img
               src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop"
               alt="About Parvej Alam"
-              className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-115 group-hover:grayscale-0"
+              className={`w-full h-full object-cover contrast-125 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-115 group-hover:grayscale-0 group-active:grayscale-0 active:grayscale-0 ${
+                activeHoverCard === 'about' ? 'grayscale-0 scale-110' : 'grayscale'
+              }`}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none opacity-60 group-hover:opacity-30 transition-opacity duration-300" />
+            <div className={`absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none transition-opacity duration-300 ${
+              activeHoverCard === 'about' ? 'opacity-20' : 'opacity-60 group-hover:opacity-30'
+            }`} />
             
             {/* A-LIGN EXACT SIGNATURE FLOATING WHITE BUTTON BADGE */}
-            <div className="absolute top-1/2 left-6 -translate-y-1/2 sm:top-auto sm:bottom-4 sm:left-4 sm:translate-y-0 bg-white text-[#111116] border border-black/15 font-mono text-[10px] sm:text-xs font-bold px-3 py-1.5 uppercase tracking-wider shadow-md group-hover:shadow-xl group-hover:scale-105 transition-all duration-300 will-change-transform">
+            <div className={`absolute top-1/2 left-6 -translate-y-1/2 sm:top-auto sm:bottom-4 sm:left-4 sm:translate-y-0 bg-white text-[#111116] border border-black/15 font-mono text-[10px] sm:text-xs font-bold px-3 py-1.5 uppercase tracking-wider shadow-md transition-all duration-300 will-change-transform ${
+              activeHoverCard === 'about' ? 'scale-105 shadow-xl bg-black text-white' : 'group-hover:shadow-xl group-hover:scale-105'
+            }`}>
               ABOUT
             </div>
           </div>
@@ -249,25 +266,41 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
           initial={{ opacity: 0, x: -30, y: 20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           whileHover={{ scale: 1.06, y: -4 }}
+          whileTap={{ scale: 0.96 }}
           transition={{ type: "spring", stiffness: 400, damping: 25, mass: 0.6 }}
           onClick={() => handleCardClick('pricing')}
+          onTouchStart={() => {
+            soundFx.playHover();
+            setActiveHoverCard('pricing');
+          }}
+          onTouchEnd={() => {
+            setTimeout(() => setActiveHoverCard(null), 1200);
+          }}
           onMouseEnter={() => {
             soundFx.playHover();
             setActiveHoverCard('pricing');
           }}
           onMouseLeave={() => setActiveHoverCard(null)}
-          className="absolute left-0 xl:-left-2 bottom-0 w-32 sm:w-40 md:w-48 lg:w-56 h-40 sm:h-52 md:h-60 lg:h-72 p-2 border-2 border-dashed border-black/25 hover:border-[#E0533C] bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-all duration-300 z-10 hover:z-50 will-change-transform"
+          className={`absolute left-0 xl:-left-2 bottom-0 w-32 sm:w-40 md:w-48 lg:w-56 h-40 sm:h-52 md:h-60 lg:h-72 p-2 border-2 border-dashed ${
+            activeHoverCard === 'pricing' ? 'border-[#E0533C] shadow-2xl scale-[1.03]' : 'border-black/25'
+          } hover:border-[#E0533C] bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-all duration-300 z-10 hover:z-50 will-change-transform touch-pan-y`}
         >
           <div className="relative w-full h-full overflow-hidden bg-neutral-100">
             <img
               src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=800&auto=format&fit=crop"
               alt="Pricing & Advisory Engagements"
-              className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-115 group-hover:grayscale-0"
+              className={`w-full h-full object-cover contrast-125 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-115 group-hover:grayscale-0 group-active:grayscale-0 active:grayscale-0 ${
+                activeHoverCard === 'pricing' ? 'grayscale-0 scale-110' : 'grayscale'
+              }`}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none opacity-60 group-hover:opacity-30 transition-opacity duration-300" />
+            <div className={`absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none transition-opacity duration-300 ${
+              activeHoverCard === 'pricing' ? 'opacity-20' : 'opacity-60 group-hover:opacity-30'
+            }`} />
             
             {/* A-LIGN EXACT SIGNATURE FLOATING WHITE BUTTON BADGE */}
-            <div className="absolute bottom-4 left-4 bg-white text-[#111116] border border-black/15 font-mono text-[10px] sm:text-xs font-bold px-3 py-1.5 uppercase tracking-wider shadow-md group-hover:shadow-xl group-hover:scale-105 transition-all duration-300 will-change-transform">
+            <div className={`absolute bottom-4 left-4 bg-white text-[#111116] border border-black/15 font-mono text-[10px] sm:text-xs font-bold px-3 py-1.5 uppercase tracking-wider shadow-md transition-all duration-300 will-change-transform ${
+              activeHoverCard === 'pricing' ? 'scale-105 shadow-xl bg-[#E0533C] text-white' : 'group-hover:shadow-xl group-hover:scale-105'
+            }`}>
               PRICING
             </div>
           </div>
@@ -282,25 +315,41 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
           initial={{ opacity: 0, x: 30, y: -20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           whileHover={{ scale: 1.06, y: -4 }}
+          whileTap={{ scale: 0.96 }}
           transition={{ type: "spring", stiffness: 400, damping: 25, mass: 0.6 }}
           onClick={() => handleCardClick('process')}
+          onTouchStart={() => {
+            soundFx.playHover();
+            setActiveHoverCard('process');
+          }}
+          onTouchEnd={() => {
+            setTimeout(() => setActiveHoverCard(null), 1200);
+          }}
           onMouseEnter={() => {
             soundFx.playHover();
             setActiveHoverCard('process');
           }}
           onMouseLeave={() => setActiveHoverCard(null)}
-          className="absolute right-0 xl:-right-2 top-0 w-32 sm:w-40 md:w-48 lg:w-52 h-36 sm:h-48 md:h-56 lg:h-64 p-2 border-2 border-dashed border-black/25 hover:border-emerald-600 bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-all duration-300 z-10 hover:z-50 hidden sm:block will-change-transform"
+          className={`absolute right-0 xl:-right-2 top-0 w-32 sm:w-40 md:w-48 lg:w-52 h-36 sm:h-48 md:h-56 lg:h-64 p-2 border-2 border-dashed ${
+            activeHoverCard === 'process' ? 'border-emerald-600 shadow-2xl scale-[1.03]' : 'border-black/25'
+          } hover:border-emerald-600 bg-white shadow-lg hover:shadow-2xl cursor-pointer group transition-all duration-300 z-10 hover:z-50 hidden sm:block will-change-transform touch-pan-y`}
         >
           <div className="relative w-full h-full overflow-hidden bg-neutral-100">
             <img
               src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=800&auto=format&fit=crop"
               alt="Process & Execution"
-              className="w-full h-full object-cover grayscale contrast-125 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-115 group-hover:grayscale-0"
+              className={`w-full h-full object-cover contrast-125 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform group-hover:scale-115 group-hover:grayscale-0 group-active:grayscale-0 active:grayscale-0 ${
+                activeHoverCard === 'process' ? 'grayscale-0 scale-110' : 'grayscale'
+              }`}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none opacity-60 group-hover:opacity-30 transition-opacity duration-300" />
+            <div className={`absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none transition-opacity duration-300 ${
+              activeHoverCard === 'process' ? 'opacity-20' : 'opacity-60 group-hover:opacity-30'
+            }`} />
             
             {/* A-LIGN EXACT SIGNATURE FLOATING WHITE BUTTON BADGE */}
-            <div className="absolute top-1/2 right-4 -translate-y-1/2 sm:top-auto sm:bottom-4 sm:right-4 sm:translate-y-0 bg-white text-[#111116] border border-black/15 font-mono text-[10px] sm:text-xs font-bold px-3 py-1.5 uppercase tracking-wider shadow-md group-hover:shadow-xl group-hover:scale-105 transition-all duration-300 will-change-transform">
+            <div className={`absolute top-1/2 right-4 -translate-y-1/2 sm:top-auto sm:bottom-4 sm:right-4 sm:translate-y-0 bg-white text-[#111116] border border-black/15 font-mono text-[10px] sm:text-xs font-bold px-3 py-1.5 uppercase tracking-wider shadow-md transition-all duration-300 will-change-transform ${
+              activeHoverCard === 'process' ? 'scale-105 shadow-xl bg-emerald-600 text-white' : 'group-hover:shadow-xl group-hover:scale-105'
+            }`}>
               PROCESS
             </div>
           </div>
@@ -315,9 +364,10 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           whileHover={{ scale: 1.05, y: -4 }}
+          whileTap={{ scale: 0.96 }}
           transition={{ type: "spring", stiffness: 400, damping: 25, mass: 0.6 }}
           onClick={() => handleCardClick('work')}
-          className="absolute right-0 xl:-right-2 bottom-0 w-[260px] sm:w-[320px] md:w-[380px] lg:w-[420px] h-[200px] sm:h-[250px] md:h-[290px] p-2 sm:p-2.5 border-2 border-dashed border-black/35 hover:border-blue-600 bg-gradient-to-br from-[#1E3A8A] via-[#1D4ED8] to-[#2563EB] shadow-[0_16px_40px_rgba(30,64,175,0.35)] transition-all duration-300 z-10 hover:z-50 group cursor-pointer will-change-transform"
+          className="absolute right-0 xl:-right-2 bottom-0 w-[260px] sm:w-[320px] md:w-[380px] lg:w-[420px] h-[200px] sm:h-[250px] md:h-[290px] p-2 sm:p-2.5 border-2 border-dashed border-black/35 hover:border-blue-600 bg-gradient-to-br from-[#1E3A8A] via-[#1D4ED8] to-[#2563EB] shadow-[0_16px_40px_rgba(30,64,175,0.35)] transition-all duration-300 z-10 hover:z-50 group cursor-pointer will-change-transform touch-pan-y"
         >
           <div className="relative w-full h-full bg-[#0A0A10] border border-white/20 overflow-hidden flex flex-col justify-between">
             {/* TOP BAR OF THE INTERACTIVE WORK SCREEN */}
@@ -614,8 +664,19 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate, onOpenCalculator }) => {
       <div className="max-w-7xl mx-auto w-full relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center bg-white border-2 border-black/15 p-4 sm:p-5 shadow-lg">
           <div className="lg:col-span-5 flex items-center gap-3.5 p-3 bg-neutral-50 border border-black/10">
-            <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-emerald-500 flex-shrink-0 shadow-md">
-              <img src="/parvej_profile.png" alt="Parvej Alam Profile" className="w-full h-full object-cover object-top" />
+            <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-emerald-500 flex-shrink-0 shadow-md bg-[#121217]">
+              <img 
+                src={parvejProfileImg || '/parvej_profile.png'} 
+                alt="Parvej Alam Sulemanali Ansari" 
+                className="w-full h-full object-cover object-top"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  if (target.src !== '/parvej_profile.png') {
+                    target.src = '/parvej_profile.png';
+                  }
+                }}
+              />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-white" />
             </div>
             <div>
               <div className="flex items-center gap-2">

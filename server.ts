@@ -1,13 +1,25 @@
+import "dotenv/config";
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 
+// In-memory rate limiting store: IP -> { count, lastRequestTime, resetTime }
+interface RateLimitRecord {
+  count: number;
+  lastRequestTime: number;
+  resetTime: number;
+}
+const rateLimitMap = new Map<string, RateLimitRecord>();
+const MAX_QUERIES_PER_SESSION = 5;
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+const MIN_COOLDOWN_MS = 2000; // 2 seconds between requests to prevent bot spam
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  app.use(express.json());
+  app.use(express.json({ limit: "50kb" }));
   app.use(express.static(path.join(process.cwd(), "public")));
 
   // API Health Endpoint
@@ -15,11 +27,102 @@ async function startServer() {
     res.json({ status: "ok", timestamp: new Date().toISOString() });
   });
 
-  // AI Sara for Parwej's Portfolio (Server-side Gemini Integration)
+  // Check persistent AI Quota for a device/IP on page load or refresh
+  app.get("/api/ai/quota", (req, res) => {
+    const deviceId = (req.query.deviceId as string) || "";
+    const clientIp = (
+      (req.headers["x-forwarded-for"] as string)?.split(",")[0] ||
+      req.socket.remoteAddress ||
+      "unknown-ip"
+    ).trim();
+
+    const trackKey = (deviceId && deviceId.startsWith("dev_")) ? deviceId : `ip_${clientIp}`;
+    const now = Date.now();
+    const record = rateLimitMap.get(trackKey);
+
+    if (!record || now > record.resetTime) {
+      return res.json({
+        remainingQueries: MAX_QUERIES_PER_SESSION,
+        maxQueries: MAX_QUERIES_PER_SESSION,
+        deviceId: trackKey
+      });
+    }
+
+    const remaining = Math.max(0, MAX_QUERIES_PER_SESSION - record.count);
+    return res.json({
+      remainingQueries: remaining,
+      maxQueries: MAX_QUERIES_PER_SESSION,
+      deviceId: trackKey
+    });
+  });
+
+  // AI Sara for Parwej's Portfolio (Server-side Gemini Integration with Device Fingerprint & Bot Defense)
   app.post("/api/ai/copilot", async (req, res) => {
     try {
-      const apiKey = process.env.GEMINI_API_KEY;
-      const { prompt, history } = req.body;
+      const { prompt, history, honeypot, deviceId, deviceCode, deviceType, os, browser } = req.body;
+      const clientIp = (
+        (req.headers["x-forwarded-for"] as string)?.split(",")[0] ||
+        req.socket.remoteAddress ||
+        "unknown-ip"
+      ).trim();
+
+      // Track by unique device fingerprint if provided, otherwise fallback to IP
+      const trackKey = (deviceId && typeof deviceId === "string" && deviceId.startsWith("dev_"))
+        ? deviceId
+        : `ip_${clientIp}`;
+
+      const now = Date.now();
+
+      // 1. Anti-Bot Honeypot Trap: automated bots fill invisible form inputs
+      if (honeypot && String(honeypot).trim() !== "") {
+        console.warn(`[Anti-Bot] Blocked bot scraper from: ${trackKey}`);
+        return res.status(400).json({
+          reply: "Automated bot traffic is strictly restricted. Please use the direct contact form."
+        });
+      }
+
+      // 2. Prompt Validation & Length Limit (prevent prompt injection/drain attacks)
+      if (!prompt || typeof prompt !== "string" || prompt.trim().length === 0) {
+        return res.status(400).json({ reply: "Please enter a valid question." });
+      }
+      if (prompt.length > 500) {
+        return res.status(400).json({
+          reply: "Question exceeds maximum character length (500 chars). Please keep your query concise."
+        });
+      }
+
+      // 3. Persistent Device Quota & Rapid-Fire Burst Prevention
+      let record = rateLimitMap.get(trackKey);
+      if (!record || now > record.resetTime) {
+        record = { count: 0, lastRequestTime: 0, resetTime: now + RATE_LIMIT_WINDOW_MS };
+        rateLimitMap.set(trackKey, record);
+      }
+
+      // Cooldown between requests
+      if (now - record.lastRequestTime < MIN_COOLDOWN_MS) {
+        return res.status(429).json({
+          reply: "Please wait a moment before sending another message.",
+          remainingQueries: Math.max(0, MAX_QUERIES_PER_SESSION - record.count)
+        });
+      }
+
+      // 4. Maximum 5 Queries Limit (Permanent across refreshes)
+      if (record.count >= MAX_QUERIES_PER_SESSION) {
+        console.warn(`[RateLimit] Device ${deviceCode || trackKey} exceeded max session limit (${MAX_QUERIES_PER_SESSION}/${MAX_QUERIES_PER_SESSION})`);
+        return res.status(429).json({
+          reply: "You have reached the maximum limit of 5 questions for this device/session to protect AI resources. To discuss projects or schedule an interview with Parwej, please reach out directly at bhaiparwej70@gmail.com!",
+          remainingQueries: 0,
+          limitReached: true
+        });
+      }
+
+      record.count += 1;
+      record.lastRequestTime = now;
+      const remainingQueries = Math.max(0, MAX_QUERIES_PER_SESSION - record.count);
+
+      console.log(`[AI Telemetry] Device: ${deviceCode || 'DEV-ANON'} | Type: ${deviceType || 'Device'} (${os || 'OS'}, ${browser || 'Browser'}) | Query: "${prompt.slice(0, 45)}..." | Remaining: ${remainingQueries}/5`);
+
+      const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
 
       const systemInstruction = `You are AI Sara, Parwej's AI Finance & Strategy Assistant on Parwej's personal portfolio website.
 Parwej is a Finance Specialist, Certified Management Accountant (CMA) Aspirant, Financial Modeling Expert, and Data Analyst (Power BI, DAX, Advanced Excel, Python).
@@ -29,18 +132,13 @@ He specializes in:
 - Power BI Executive Dashboards, DAX formulas, Power Query ETL pipelines
 - Strategic Financial Planning & Analysis (FP&A) and Capital Budgeting
 
-Your goal is to answer questions from recruiters, executives, and hiring managers in a professional, concise, articulate tone reflecting Parwej's analytical rigor and executive precision.
-Keep answers under 3 concise paragraphs. Highlight Parwej's key strengths, CMA candidacy, data analytics capabilities, and email: bhaiparwej70@gmail.com.`;
+Your goal is to answer questions from recruiters and executives in a concise, articulate, executive tone.
+CRITICAL COST OPTIMIZATION: Keep answers strictly under 80 words in 2 crisp, high-impact paragraphs. Highlight Parwej's key strengths, CMA credentials, and email: bhaiparwej70@gmail.com.`;
 
       if (apiKey) {
         try {
           const ai = new GoogleGenAI({
             apiKey,
-            httpOptions: {
-              headers: {
-                'User-Agent': 'aistudio-build',
-              },
-            },
           });
 
           // Format and sanitize history to ensure strictly alternating user and model roles
@@ -62,27 +160,40 @@ Keep answers under 3 concise paragraphs. Highlight Parwej's key strengths, CMA c
             }
           }
 
-          const chat = ai.chats.create({
-            model: "gemini-3.1-pro",
-            config: {
-              systemInstruction,
-              temperature: 0.7,
-            },
-            history: formattedHistory,
-          });
+          // Robust multi-model cascade (Fastest & latest official Gemini models)
+          const modelsToTry = [
+            "gemini-flash-latest",
+            "gemini-3.7-flash",
+            "gemini-3.5-flash",
+            "gemini-2.5-flash-lite",
+            "gemini-flash-lite-latest"
+          ];
+          let aiText = "";
 
-          // Timeout promise after 6 seconds to prevent frontend hanging
-          const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error("Gemini request timeout")), 6000)
-          );
+          for (const modelName of modelsToTry) {
+            try {
+              const chat = ai.chats.create({
+                model: modelName,
+                config: {
+                  systemInstruction,
+                  temperature: 0.65,
+                  maxOutputTokens: 220, // Strict token limit to keep API bill ultra-low
+                },
+                history: formattedHistory,
+              });
 
-          const response: any = await Promise.race([
-            chat.sendMessage({ message: prompt }),
-            timeoutPromise,
-          ]);
+              const response: any = await chat.sendMessage({ message: prompt });
+              if (response && response.text) {
+                aiText = response.text;
+                break;
+              }
+            } catch (modelErr: any) {
+              console.warn(`[AI Sara] Attempt with ${modelName} failed, trying next:`, modelErr?.message || modelErr);
+            }
+          }
 
-          if (response && response.text) {
-            return res.json({ reply: response.text });
+          if (aiText) {
+            return res.json({ reply: aiText, remainingQueries });
           }
         } catch (err: any) {
           console.warn("[AI Sara] Gemini call warning:", err?.message || err);
@@ -103,11 +214,12 @@ Keep answers under 3 concise paragraphs. Highlight Parwej's key strengths, CMA c
         fallbackText = "Parwej applies Activity-Based Costing (ABC) and Marginal Costing frameworks to eliminate overhead allocation distortions, isolate standard vs actual cost variances, and optimize working capital.";
       }
 
-      return res.json({ reply: fallbackText });
+      return res.json({ reply: fallbackText, remainingQueries });
     } catch (error: any) {
       console.error("AI Sara Handler Error:", error);
       return res.json({
-        reply: "Hello! I am AI Sara. Parwej is a Finance Specialist & CMA Candidate skilled in Financial Modeling, Power BI & DAX. Reach out directly at bhaiparwej70@gmail.com!"
+        reply: "Hello! I am AI Sara. Parwej is a Finance Specialist & CMA Candidate skilled in Financial Modeling, Power BI & DAX. Reach out directly at bhaiparwej70@gmail.com!",
+        remainingQueries: 0
       });
     }
   });

@@ -129,14 +129,51 @@ export const TactileMediaFrame: React.FC<TactileMediaFrameProps> = ({
       scaleTo(1.0);
     };
 
-    container.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('mouseenter', handleMouseEnter);
-    container.addEventListener('mouseleave', handleMouseLeave);
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        scaleTo(zoomScale * 0.98);
+        const rect = container.getBoundingClientRect();
+        const touch = e.touches[0];
+        const normX = (touch.clientX - rect.left) / rect.width - 0.5;
+        const normY = (touch.clientY - rect.top) / rect.height - 0.5;
+        xTo(normX * 18);
+        yTo(normY * 18);
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        const rect = container.getBoundingClientRect();
+        const touch = e.touches[0];
+        const normX = (touch.clientX - rect.left) / rect.width - 0.5;
+        const normY = (touch.clientY - rect.top) / rect.height - 0.5;
+        xTo(normX * 18);
+        yTo(normY * 18);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      xTo(0);
+      yTo(0);
+      scaleTo(1.0);
+    };
+
+    container.addEventListener('mousemove', handleMouseMove, { passive: true });
+    container.addEventListener('mouseenter', handleMouseEnter, { passive: true });
+    container.addEventListener('mouseleave', handleMouseLeave, { passive: true });
+    container.addEventListener('touchstart', handleTouchStart, { passive: true });
+    container.addEventListener('touchmove', handleTouchMove, { passive: true });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
 
     return () => {
       container.removeEventListener('mousemove', handleMouseMove);
       container.removeEventListener('mouseenter', handleMouseEnter);
       container.removeEventListener('mouseleave', handleMouseLeave);
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchEnd);
     };
   }, [enableParallax, zoomScale]);
 

@@ -26,11 +26,14 @@ import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { PrintDossier, PrintOptions, DEFAULT_PRINT_OPTIONS } from './components/PrintDossier';
 import { ExportPDFModal } from './components/ExportPDFModal';
+import { CookieConsentBanner } from './components/CookieConsentBanner';
 import { GuideRulerOverlay } from './components/GuideRulerOverlay';
+import { FocusedSectionView } from './components/FocusedSectionView';
 import { PERSONAL_INFO } from './data/portfolioData';
 import { initSmoothScroll, ScrollTrigger, isTouchMobileDevice } from './lib/gsap';
 import { assetPreloader } from './lib/assetPreloader';
 import { audioManager } from './lib/audio';
+import { getDeviceCapabilities } from './lib/performanceTier';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -51,6 +54,11 @@ export default function App() {
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
+
+  // Run hardware capability analysis on initial mount
+  useEffect(() => {
+    getDeviceCapabilities();
+  }, []);
 
   // Global Audio Context Singleton & Pre-loading of mechanical click assets on initial mount
   useEffect(() => {
@@ -177,19 +185,77 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isCommandOpen, isPrintModalOpen]);
 
+  const [focusedSection, setFocusedSection] = useState<string | null>(null);
+  const previousScrollYRef = React.useRef<number>(0);
+
+  // Check URL hash on initial load (e.g. #/work or #/pricing)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash.startsWith('#/')) {
+      const initialSection = window.location.hash.replace('#/', '').trim();
+      if (initialSection && initialSection !== 'home') {
+        setFocusedSection(initialSection);
+      }
+    }
+  }, []);
+
+  // Listen to browser Back / Forward buttons (popstate)
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      if (e.state && e.state.sectionId) {
+        setFocusedSection(e.state.sectionId);
+      } else {
+        setFocusedSection(null);
+        const restoreY = previousScrollYRef.current || 0;
+        setTimeout(() => {
+          window.scrollTo({ top: restoreY, behavior: 'instant' });
+          ScrollTrigger.refresh(true);
+        }, 60);
+        setTimeout(() => {
+          ScrollTrigger.refresh(true);
+        }, 500);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   const handleNavigate = (sectionId: string) => {
     setActiveSection(sectionId);
     assetPreloader.preloadUpcomingSection(sectionId);
 
+    // If selecting 'home', return to full homepage at top
     if (sectionId === 'home') {
+      if (focusedSection !== null) {
+        setFocusedSection(null);
+        window.history.pushState(null, '', window.location.pathname);
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
 
-    const el = document.getElementById(sectionId);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+    // Entering isolated section view mode
+    if (focusedSection === null) {
+      previousScrollYRef.current = window.scrollY;
     }
+
+    setFocusedSection(sectionId);
+    window.history.pushState({ sectionId }, '', `/#/${sectionId}`);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  const handleExitFocusedView = () => {
+    setFocusedSection(null);
+    window.history.pushState(null, '', window.location.pathname);
+    const restoreY = previousScrollYRef.current || 0;
+    setTimeout(() => {
+      window.scrollTo({ top: restoreY, behavior: 'instant' });
+      ScrollTrigger.refresh(true);
+    }, 60);
+    // Second refresh after layout fully settles
+    setTimeout(() => {
+      ScrollTrigger.refresh(true);
+    }, 500);
   };
 
   const handleCopyEmail = () => {
@@ -213,173 +279,187 @@ export default function App() {
         <Loader onComplete={() => setIsLoading(false)} />
       ) : (
         <>
-          {/* Screen Content Wrapper (hidden when printing) */}
-          <div id="screen-portfolio-main" className="screen-only">
-            {/* Custom Desktop Mouse Follower */}
-            <CustomCursor />
-
-            {/* A-Lign Studio Left Chapter Tracker HUD */}
-            <ChapterNavHUD
-              activeSection={activeSection}
-              onNavigate={handleNavigate}
-            />
-
-            {/* Navigation Bar */}
-            <Navbar
-              activeSection={activeSection}
-              onNavigate={handleNavigate}
-              onOpenCommand={() => setIsCommandOpen(true)}
-              onOpenCopilot={() => setIsCopilotOpen(true)}
-              onOpenDrive={() => setIsDriveOpen(true)}
-              onOpenPrint={() => setIsPrintModalOpen(true)}
-              isDriveConnected={isDriveConnected}
-            />
-
-            {/* Main Portfolio Sections - Single Authoritative Layout */}
-            <main className="relative">
-              {/* Scene 01: Hero Scene */}
-              <div id="home">
-                <Hero
-                  onNavigate={handleNavigate}
-                  onOpenCalculator={() => setIsCalculatorOpen(true)}
-                />
-              </div>
-
-              <SectionTransitionDivider sceneNumber="02" label="MANIFESTO" accentColor="#E0533C" />
-
-              {/* Scene 02: Scroll-Driven Kinetic Typography Manifesto */}
-              <KineticTypographySection />
-
-              <SectionTransitionDivider sceneNumber="03" label="CHRONOLOGY" accentColor="#E0533C" />
-
-              {/* Scene 03: A-Lign Inspired Interactive Chapter Timeline Strip */}
-              <ChapterTimeline />
-
-              <SectionTransitionDivider sceneNumber="04" label="WORK" accentColor="#E0533C" />
-
-              {/* Scene 03: Selected Work Scene (A-Lign 3D Orbit & Stacking Deck) */}
-              <WorkSection onContact={() => handleNavigate('contact')} />
-
-              <SectionTransitionDivider sceneNumber="04" label="VALUATION LAB" accentColor="#E0533C" />
-
-              {/* Scene 04: Live Financial Valuation & Sensitivity Sandbox */}
-              <FinancialSandbox />
-
-              <SectionTransitionDivider sceneNumber="05" label="PRICING & ENGAGEMENT" accentColor="#E0533C" />
-
-              {/* Scene 05: Engagement & Pricing Models Scene */}
-              <PricingSection onContact={() => handleNavigate('contact')} />
-
-              <SectionTransitionDivider sceneNumber="06" label="BI TELEMETRY" accentColor="#3B82F6" />
-
-              {/* Scene 06: Power BI & Executive Data Telemetry Showcase Scene */}
-              <AnalyticsShowcase />
-
-              <SectionTransitionDivider sceneNumber="07" label="CORE VALUES & FRAMEWORK" accentColor="#E0533C" />
-
-              {/* Scene 07: Standalone Progressive Core Values & Operating Framework Section */}
-              <CoreValuesSection />
-
-              <SectionTransitionDivider sceneNumber="08" label="PHILOSOPHY" accentColor="#E0533C" />
-
-              {/* Scene 08: About & Executive Magazine Scene */}
-              <AboutSection />
-
-              <SectionTransitionDivider sceneNumber="09" label="CHRONOLOGY" accentColor="#10B981" />
-
-              {/* Scene 09: Career Chronology (CMA & Experience - Pinned Scroll) */}
-              <ExperienceTimeline />
-
-              <SectionTransitionDivider sceneNumber="10" label="SKILL ARCHITECTURE" accentColor="#10B981" />
-
-              {/* Scene 10: Typographic Skill Architecture (Pinned Scroll) */}
-              <SkillsSection />
-
-              <SectionTransitionDivider sceneNumber="11" label="CREDENTIALS" accentColor="#10B981" />
-
-              {/* Scene 11: Verified Certifications Gallery */}
-              <CertificateGallery />
-
-              <SectionTransitionDivider sceneNumber="12" label="METHODOLOGY" accentColor="#E0533C" />
-
-              {/* Scene 12: 5-Stage Execution Methodology Scene */}
-              <ProcessSection />
-
-              <SectionTransitionDivider sceneNumber="13" label="CONTACT & INITIATION" accentColor="#10B981" />
-
-              {/* Scene 13: Contact CTA & Inquiry Form */}
-              <ContactSection onCopyEmail={handleCopyEmail} />
-            </main>
-
-
-            {/* Visual Guide Ruler Overlay (25%, 50%, 75% Alignment Verification) */}
-            <GuideRulerOverlay
-              isOpen={isGuideRulerOpen}
-              onToggle={() => setIsGuideRulerOpen(!isGuideRulerOpen)}
-            />
-
-            {/* Floating Dock Navigation */}
-            <FloatingNavDock
-              activeSection={activeSection}
-              onNavigate={handleNavigate}
-              onOpenCommand={() => setIsCommandOpen(true)}
-              onOpenCopilot={() => setIsCopilotOpen(true)}
-              onOpenPrint={() => setIsPrintModalOpen(true)}
-            />
-
-            {/* Editorial Footer */}
-            <Footer 
-              onNavigate={handleNavigate} 
-              onOpenPrint={() => setIsPrintModalOpen(true)}
-            />
-
-            {/* Utility Modals & Drawers */}
-            <FinancialCalculator
-              isOpen={isCalculatorOpen}
-              onClose={() => setIsCalculatorOpen(false)}
-            />
-
-            <GoogleDriveModal
-              isOpen={isDriveOpen}
-              onClose={() => setIsDriveOpen(false)}
-              isDriveConnected={isDriveConnected}
-              setIsDriveConnected={setIsDriveConnected}
-            />
-
-            <AICopilotDrawer
-              isOpen={isCopilotOpen}
-              onClose={() => setIsCopilotOpen(false)}
-              onNavigate={handleNavigate}
-            />
-
-            <CommandPalette
-              isOpen={isCommandOpen}
-              onClose={() => setIsCommandOpen(false)}
-              onNavigate={handleNavigate}
-              onOpenCopilot={() => setIsCopilotOpen(true)}
-              onOpenCalculator={() => setIsCalculatorOpen(true)}
-              onOpenDrive={() => setIsDriveOpen(true)}
-              onOpenPrint={() => setIsPrintModalOpen(true)}
+          {/* IF FOCUSED SECTION IS ACTIVE: RENDER ONLY THAT ISOLATED SECTION */}
+          {focusedSection ? (
+            <FocusedSectionView
+              sectionId={focusedSection}
+              onBackToPortfolio={handleExitFocusedView}
+              onNavigateSection={handleNavigate}
               onCopyEmail={handleCopyEmail}
-              onToggleGuideRuler={() => setIsGuideRulerOpen(!isGuideRulerOpen)}
-              isGuideRulerOpen={isGuideRulerOpen}
               theme={theme}
-              onToggleTheme={toggleTheme}
             />
-          </div>
+          ) : (
+            /* FULL CONNECTED MAIN PORTFOLIO (100% UNCHANGED) */
+            <div id="screen-portfolio-main" className="screen-only">
+              {/* Custom Desktop Mouse Follower */}
+              <CustomCursor />
+
+              {/* A-Lign Studio Left Chapter Tracker HUD */}
+              <ChapterNavHUD
+                activeSection={activeSection}
+                onNavigate={handleNavigate}
+              />
+
+              {/* Navigation Bar */}
+              <Navbar
+                activeSection={activeSection}
+                onNavigate={handleNavigate}
+                onOpenCommand={() => setIsCommandOpen(true)}
+                onOpenCopilot={() => setIsCopilotOpen(true)}
+                onOpenDrive={() => setIsDriveOpen(true)}
+                onOpenPrint={() => setIsPrintModalOpen(true)}
+                isDriveConnected={isDriveConnected}
+              />
+
+              {/* Main Portfolio Sections - Single Authoritative Layout */}
+              <main className="relative">
+                {/* Scene 01: Hero Scene */}
+                <div id="home">
+                  <Hero
+                    onNavigate={handleNavigate}
+                    onOpenCalculator={() => setIsCalculatorOpen(true)}
+                  />
+                </div>
+
+                <SectionTransitionDivider sceneNumber="02" label="MANIFESTO" accentColor="#E0533C" />
+
+                {/* Scene 02: Scroll-Driven Kinetic Typography Manifesto */}
+                <KineticTypographySection />
+
+                <SectionTransitionDivider sceneNumber="03" label="CHRONOLOGY" accentColor="#E0533C" />
+
+                {/* Scene 03: A-Lign Inspired Interactive Chapter Timeline Strip */}
+                <ChapterTimeline />
+
+                <SectionTransitionDivider sceneNumber="04" label="WORK" accentColor="#E0533C" />
+
+                {/* Scene 03: Selected Work Scene (A-Lign 3D Orbit & Stacking Deck) */}
+                <WorkSection onContact={() => handleNavigate('contact')} />
+
+                <SectionTransitionDivider sceneNumber="04" label="VALUATION LAB" accentColor="#E0533C" />
+
+                {/* Scene 04: Live Financial Valuation & Sensitivity Sandbox */}
+                <FinancialSandbox />
+
+                <SectionTransitionDivider sceneNumber="05" label="PRICING & ENGAGEMENT" accentColor="#E0533C" />
+
+                {/* Scene 05: Engagement & Pricing Models Scene */}
+                <PricingSection onContact={() => handleNavigate('contact')} />
+
+                <SectionTransitionDivider sceneNumber="06" label="BI TELEMETRY" accentColor="#3B82F6" />
+
+                {/* Scene 06: Power BI & Executive Data Telemetry Showcase Scene */}
+                <AnalyticsShowcase />
+
+                <SectionTransitionDivider sceneNumber="07" label="CORE VALUES & FRAMEWORK" accentColor="#E0533C" />
+
+                {/* Scene 07: Standalone Progressive Core Values & Operating Framework Section */}
+                <CoreValuesSection />
+
+                <SectionTransitionDivider sceneNumber="08" label="PHILOSOPHY" accentColor="#E0533C" />
+
+                {/* Scene 08: About & Executive Magazine Scene */}
+                <AboutSection />
+
+                <SectionTransitionDivider sceneNumber="09" label="CHRONOLOGY" accentColor="#10B981" />
+
+                {/* Scene 09: Career Chronology (CMA & Experience - Pinned Scroll) */}
+                <ExperienceTimeline />
+
+                <SectionTransitionDivider sceneNumber="10" label="SKILL ARCHITECTURE" accentColor="#10B981" />
+
+                {/* Scene 10: Typographic Skill Architecture (Pinned Scroll) */}
+                <SkillsSection />
+
+                <SectionTransitionDivider sceneNumber="11" label="CREDENTIALS" accentColor="#10B981" />
+
+                {/* Scene 11: Verified Certifications Gallery */}
+                <CertificateGallery />
+
+                <SectionTransitionDivider sceneNumber="12" label="METHODOLOGY" accentColor="#E0533C" />
+
+                {/* Scene 12: 5-Stage Execution Methodology Scene */}
+                <ProcessSection />
+
+                <SectionTransitionDivider sceneNumber="13" label="CONTACT & INITIATION" accentColor="#10B981" />
+
+                {/* Scene 13: Contact CTA & Inquiry Form */}
+                <ContactSection onCopyEmail={handleCopyEmail} />
+              </main>
+
+
+              {/* Visual Guide Ruler Overlay (25%, 50%, 75% Alignment Verification) */}
+              <GuideRulerOverlay
+                isOpen={isGuideRulerOpen}
+                onToggle={() => setIsGuideRulerOpen(!isGuideRulerOpen)}
+              />
+
+              {/* Editorial Footer */}
+              <Footer 
+                onNavigate={handleNavigate} 
+                onOpenPrint={() => setIsPrintModalOpen(true)}
+              />
+            </div>
+          )}
+
+          {/* Floating Dock Navigation — Always visible in both focused & full views */}
+          <FloatingNavDock
+            activeSection={focusedSection || activeSection}
+            onNavigate={handleNavigate}
+            onOpenCommand={() => setIsCommandOpen(true)}
+            onOpenCopilot={() => setIsCopilotOpen(true)}
+            onOpenPrint={() => setIsPrintModalOpen(true)}
+          />
+
+          {/* Utility Modals & Drawers */}
+          <FinancialCalculator
+            isOpen={isCalculatorOpen}
+            onClose={() => setIsCalculatorOpen(false)}
+          />
+
+          <GoogleDriveModal
+            isOpen={isDriveOpen}
+            onClose={() => setIsDriveOpen(false)}
+            isDriveConnected={isDriveConnected}
+            setIsDriveConnected={setIsDriveConnected}
+          />
+
+          <AICopilotDrawer
+            isOpen={isCopilotOpen}
+            onClose={() => setIsCopilotOpen(false)}
+            onNavigate={handleNavigate}
+          />
+
+          <CommandPalette
+            isOpen={isCommandOpen}
+            onClose={() => setIsCommandOpen(false)}
+            onNavigate={handleNavigate}
+            onOpenCopilot={() => setIsCopilotOpen(true)}
+            onOpenCalculator={() => setIsCalculatorOpen(true)}
+            onOpenDrive={() => setIsDriveOpen(true)}
+            onOpenPrint={() => setIsPrintModalOpen(true)}
+            onCopyEmail={handleCopyEmail}
+            onToggleGuideRuler={() => setIsGuideRulerOpen(!isGuideRulerOpen)}
+            isGuideRulerOpen={isGuideRulerOpen}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+          />
 
           {/* Dedicated Print & PDF Export Layout (renders cleanly during window.print()) */}
           <div id="print-portfolio-dossier" className="hidden print:block">
             <PrintDossier options={printOptions} />
           </div>
 
-          {/* Export PDF Modal Customizer */}
+            {/* Export PDF Modal Customizer */}
           <ExportPDFModal
             isOpen={isPrintModalOpen}
             onClose={() => setIsPrintModalOpen(false)}
             options={printOptions}
             setOptions={setPrintOptions}
           />
+
+          {/* Device Telemetry & Cookie Security Banner */}
+          <CookieConsentBanner />
         </>
       )}
     </div>

@@ -63,6 +63,8 @@ export const CertificateGallery: React.FC = () => {
     }
   };
 
+  const [dragOffset, setDragOffset] = useState<number>(0);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -83,9 +85,38 @@ export const CertificateGallery: React.FC = () => {
   const handlePointerUp = (e: React.PointerEvent) => {
     if (!isDraggingRef.current || dragStartXRef.current === null) return;
     const deltaX = e.clientX - dragStartXRef.current;
-    if (Math.abs(deltaX) > 40) deltaX > 0 ? handlePrev() : handleNext();
+    if (Math.abs(deltaX) > 35) deltaX > 0 ? handlePrev() : handleNext();
     isDraggingRef.current = false;
     dragStartXRef.current = null;
+    setDragOffset(0);
+  };
+
+  // Dedicated Mobile Touch Handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      dragStartXRef.current = e.touches[0].clientX;
+      isDraggingRef.current = true;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isDraggingRef.current && dragStartXRef.current !== null && e.touches.length > 0) {
+      const currentX = e.touches[0].clientX;
+      const deltaX = currentX - dragStartXRef.current;
+      setDragOffset(deltaX * 0.35);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isDraggingRef.current || dragStartXRef.current === null) return;
+    const touchEndX = e.changedTouches.length > 0 ? e.changedTouches[0].clientX : dragStartXRef.current;
+    const deltaX = touchEndX - dragStartXRef.current;
+    if (Math.abs(deltaX) > 35) {
+      deltaX > 0 ? handlePrev() : handleNext();
+    }
+    isDraggingRef.current = false;
+    dragStartXRef.current = null;
+    setDragOffset(0);
   };
 
   // Pinned section ScrollTrigger
@@ -227,9 +258,13 @@ export const CertificateGallery: React.FC = () => {
             
             {/* ── 3D CREDENTIAL ORBIT VIEWPORT ─────────────────────────── */}
             <div
-              className="relative w-full h-[220px] sm:h-[250px] md:h-[270px] flex items-center justify-center [perspective:1400px] overflow-hidden select-none cursor-grab active:cursor-grabbing border-b border-black/10 pb-2"
+              className="relative w-full h-[220px] sm:h-[250px] md:h-[270px] flex items-center justify-center [perspective:1400px] overflow-hidden select-none cursor-grab active:cursor-grabbing border-b border-black/10 pb-2 touch-pan-y"
               onPointerDown={handlePointerDown}
               onPointerUp={handlePointerUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onTouchCancel={handleTouchEnd}
             >
               {/* Elliptical Orbit Wireframe Guide */}
               <div className="absolute w-[450px] sm:w-[700px] h-[100px] border border-black/10 rounded-[100%] [transform:rotateX(72deg)_translateZ(-60px)] pointer-events-none opacity-40" />
@@ -245,7 +280,8 @@ export const CertificateGallery: React.FC = () => {
 
                 if (!isVisible) return null;
 
-                const translateX = relativePos * (typeof window !== 'undefined' && window.innerWidth < 640 ? 120 : 220);
+                const baseSpacing = typeof window !== 'undefined' && window.innerWidth < 640 ? 115 : 220;
+                const translateX = relativePos * baseSpacing + (isActive ? dragOffset : dragOffset * 0.4);
                 const translateZ = isActive ? 90 : isAdjacent ? -40 : -160;
                 const rotateY = -relativePos * 22;
                 const scale = isActive ? 1 : isAdjacent ? 0.82 : 0.65;

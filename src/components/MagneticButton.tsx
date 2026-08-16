@@ -18,6 +18,8 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
+  const [isPressed, setIsPressed] = useState(false);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!buttonRef.current) return;
     const { left, top, width, height } = buttonRef.current.getBoundingClientRect();
@@ -32,6 +34,15 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
 
   const handleMouseLeave = () => {
     setPosition({ x: 0, y: 0 });
+    setIsPressed(false);
+  };
+
+  const handleTouchStart = () => {
+    setIsPressed(true);
+  };
+
+  const handleTouchEnd = () => {
+    setIsPressed(false);
   };
 
   return (
@@ -40,12 +51,15 @@ export const MagneticButton: React.FC<MagneticButtonProps> = ({
       onClick={onClick}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
       data-cursor-text={dataCursorText}
       style={{
-        transform: `translate3d(${position.x}px, ${position.y}px, 0px)`,
-        transition: position.x === 0 && position.y === 0 ? 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1)' : 'transform 0.1s ease-out',
+        transform: `translate3d(${position.x}px, ${position.y}px, 0px) scale(${isPressed ? 0.96 : 1})`,
+        transition: position.x === 0 && position.y === 0 ? 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)' : 'transform 0.1s ease-out',
       }}
-      className={`relative inline-flex items-center justify-center cursor-pointer select-none ${className}`}
+      className={`relative inline-flex items-center justify-center cursor-pointer select-none active:scale-95 ${className}`}
     >
       {children}
     </button>

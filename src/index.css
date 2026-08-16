@@ -51,6 +51,17 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Touch & tap responsiveness optimization for mobile */
+button, a, input, select, textarea, [role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.touch-pan-y {
+  touch-action: pan-y;
 }
 
 /* GPU TRANSFORMS & RENDER OPTIMIZATION */
@@ -66,6 +77,32 @@ html, body {
     -webkit-backdrop-filter: blur(8px) !important;
     backdrop-filter: blur(8px) !important;
   }
+}
+
+/* LOW-END / BUDGET SMARTPHONE ADAPTIVE OVERRIDES */
+.device-tier-low * {
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+.device-tier-low .backdrop-blur-xl,
+.device-tier-low .backdrop-blur-lg,
+.device-tier-low .backdrop-blur-md {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  background-color: rgba(243, 242, 238, 0.98) !important;
+}
+
+.device-tier-low .shadow-2xl,
+.device-tier-low .shadow-xl,
+.device-tier-low .shadow-lg {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* HIGH-END RIGS / PROMOTION 120HZ ADAPTIVE ACCELERATION */
+.device-tier-high .gpu-layer {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 /* CUSTOM SELECTION STYLE */

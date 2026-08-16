@@ -140,11 +140,32 @@ RETURN DIVIDE(CurrentYTD - PriorYTD, PriorYTD, 0)`,
     }
   };
 
+  const touchStartXRef = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartXRef.current;
+    if (Math.abs(deltaX) > 45) {
+      if (deltaX < 0 && activeStage < totalStages - 1) {
+        handleSelectStage(activeStage + 1);
+      } else if (deltaX > 0 && activeStage > 0) {
+        handleSelectStage(activeStage - 1);
+      }
+    }
+    touchStartXRef.current = null;
+  };
+
   return (
     <section
       ref={sectionRef}
       id="dashboards"
-      className="relative w-full min-h-screen bg-[#F3F2EE] text-[#111116] border-b border-black/10 select-none overflow-hidden flex flex-col justify-between py-6 md:py-8 px-4 sm:px-6 md:px-12"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      className="relative w-full min-h-screen bg-[#F3F2EE] text-[#111116] border-b border-black/10 select-none overflow-hidden flex flex-col justify-between py-6 md:py-8 px-4 sm:px-6 md:px-12 touch-pan-y"
     >
       {/* CONTEXTUAL PROFESSIONAL BACKGROUND PHOTO */}
       <SectionBackgroundLayer sectionKey="dashboards" opacity={0.2} />

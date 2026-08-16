@@ -33,6 +33,8 @@ export const OrbitCarousel3D: React.FC<OrbitCarousel3DProps> = ({
   const dragStartXRef = useRef<number | null>(null);
   const isDraggingRef = useRef(false);
 
+  const [dragOffset, setDragOffset] = useState(0);
+
   const total = projects.length;
   const activeProject = projects[activeIndex] || projects[0];
 
@@ -70,9 +72,38 @@ export const OrbitCarousel3D: React.FC<OrbitCarousel3DProps> = ({
   const handlePointerUp = (e: React.PointerEvent) => {
     if (!isDraggingRef.current || dragStartXRef.current === null) return;
     const deltaX = e.clientX - dragStartXRef.current;
-    if (Math.abs(deltaX) > 40) deltaX > 0 ? handlePrev() : handleNext();
+    if (Math.abs(deltaX) > 35) deltaX > 0 ? handlePrev() : handleNext();
     isDraggingRef.current = false;
     dragStartXRef.current = null;
+    setDragOffset(0);
+  };
+
+  // Dedicated Mobile Touch Handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length > 0) {
+      dragStartXRef.current = e.touches[0].clientX;
+      isDraggingRef.current = true;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isDraggingRef.current && dragStartXRef.current !== null && e.touches.length > 0) {
+      const currentX = e.touches[0].clientX;
+      const deltaX = currentX - dragStartXRef.current;
+      setDragOffset(deltaX * 0.35);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isDraggingRef.current || dragStartXRef.current === null) return;
+    const touchEndX = e.changedTouches.length > 0 ? e.changedTouches[0].clientX : dragStartXRef.current;
+    const deltaX = touchEndX - dragStartXRef.current;
+    if (Math.abs(deltaX) > 35) {
+      deltaX > 0 ? handlePrev() : handleNext();
+    }
+    isDraggingRef.current = false;
+    dragStartXRef.current = null;
+    setDragOffset(0);
   };
 
   const getCategoryBadge = (category: string) => {
@@ -86,9 +117,13 @@ export const OrbitCarousel3D: React.FC<OrbitCarousel3DProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full select-none"
+      className="relative w-full select-none touch-pan-y"
       onPointerDown={handlePointerDown}
       onPointerUp={handlePointerUp}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
       {/* ── 3D ORBIT STAGE ─────────────────────────────────────────── */}
       <div className="relative w-full h-[300px] sm:h-[360px] flex items-center justify-center [perspective:1400px] overflow-hidden">
@@ -105,7 +140,8 @@ export const OrbitCarousel3D: React.FC<OrbitCarousel3DProps> = ({
 
           if (!isVisible) return null;
 
-          const translateX = relativePos * (typeof window !== 'undefined' && window.innerWidth < 640 ? 120 : 230);
+          const baseSpacing = typeof window !== 'undefined' && window.innerWidth < 640 ? 115 : 230;
+          const translateX = relativePos * baseSpacing + (isActive ? dragOffset : dragOffset * 0.4);
           const translateZ = isActive ? 100 : isAdjacent ? -50 : -190;
           const rotateY = -relativePos * 22;
           const scale = isActive ? 1 : isAdjacent ? 0.80 : 0.62;
@@ -116,10 +152,10 @@ export const OrbitCarousel3D: React.FC<OrbitCarousel3DProps> = ({
           return (
             <motion.div
               key={project.id}
-              className="absolute w-[80%] max-w-[300px] sm:max-w-[370px] h-[240px] sm:h-[290px] rounded-none cursor-pointer [transform-style:preserve-3d] group"
+              className="absolute w-[82%] max-w-[300px] sm:max-w-[370px] h-[240px] sm:h-[290px] rounded-none cursor-pointer [transform-style:preserve-3d] group"
               style={{ zIndex, willChange: 'transform, opacity' }}
               animate={{ x: translateX, z: translateZ, rotateY, scale, opacity }}
-              transition={{ type: 'spring', stiffness: 260, damping: 28, mass: 0.8 }}
+              transition={{ type: 'spring', stiffness: 280, damping: 28, mass: 0.8 }}
               onClick={() => {
                 if (!isActive) { soundFx.playNav(); setActiveIndex(idx); }
                 else { soundFx.playClick(); onSelectProject(project); }

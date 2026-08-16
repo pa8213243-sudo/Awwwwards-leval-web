@@ -26,31 +26,30 @@ export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
 
   const rafIdRef = useRef<number | null>(null);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (typeof window !== 'undefined' && window.innerWidth <= 768) return;
-
+  const applyTilt = (clientX: number, clientY: number, isTouch = false) => {
     const card = cardRef.current;
     if (!card) return;
 
     const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
 
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const rotateX = ((y - centerY) / centerY) * -maxTilt;
-    const rotateY = ((x - centerX) / centerX) * maxTilt;
+    const effectiveTilt = isTouch ? maxTilt * 0.85 : maxTilt;
+    const rotateX = ((y - centerY) / centerY) * -effectiveTilt;
+    const rotateY = ((x - centerX) / centerX) * effectiveTilt;
 
-    const magX = (x - centerX) * magneticStrength;
-    const magY = (y - centerY) * magneticStrength;
+    const magX = (x - centerX) * (isTouch ? magneticStrength * 0.5 : magneticStrength);
+    const magY = (y - centerY) * (isTouch ? magneticStrength * 0.5 : magneticStrength);
 
     if (rafIdRef.current !== null) return;
 
     rafIdRef.current = requestAnimationFrame(() => {
       rafIdRef.current = null;
 
-      if (wrapperRef.current) {
+      if (wrapperRef.current && !isTouch) {
         gsap.to(wrapperRef.current, {
           x: magX,
           y: magY,
@@ -62,14 +61,30 @@ export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
 
       setTilt({ x: rotateX, y: rotateY });
       setGlarePosition({
-        x: (x / rect.width) * 100,
-        y: (y / rect.height) * 100,
+        x: Math.max(0, Math.min(100, (x / rect.width) * 100)),
+        y: Math.max(0, Math.min(100, (y / rect.height) * 100)),
         opacity: glareOpacity,
       });
     });
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    applyTilt(e.clientX, e.clientY, false);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length > 0) {
+      applyTilt(e.touches[0].clientX, e.touches[0].clientY, true);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length > 0) {
+      applyTilt(e.touches[0].clientX, e.touches[0].clientY, true);
+    }
+  };
+
+  const resetTilt = () => {
     if (rafIdRef.current !== null) {
       cancelAnimationFrame(rafIdRef.current);
       rafIdRef.current = null;
@@ -88,6 +103,14 @@ export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
     setGlarePosition((prev) => ({ ...prev, opacity: 0 }));
   };
 
+  const handleMouseLeave = () => {
+    resetTilt();
+  };
+
+  const handleTouchEnd = () => {
+    resetTilt();
+  };
+
   return (
     <div
       ref={wrapperRef}
@@ -97,8 +120,12 @@ export const InteractiveTiltCard: React.FC<InteractiveTiltCardProps> = ({
         ref={cardRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
         onClick={onClick}
-        className="relative [perspective:1000px] w-full h-full cursor-pointer"
+        className="relative [perspective:1000px] w-full h-full cursor-pointer touch-pan-y"
       >
         <motion.div
           animate={{
