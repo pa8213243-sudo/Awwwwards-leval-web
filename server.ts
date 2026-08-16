@@ -122,18 +122,32 @@ async function startServer() {
 
       console.log(`[AI Telemetry] Device: ${deviceCode || 'DEV-ANON'} | Type: ${deviceType || 'Device'} (${os || 'OS'}, ${browser || 'Browser'}) | Query: "${prompt.slice(0, 45)}..." | Remaining: ${remainingQueries}/5`);
 
-      const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+      const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || "";
 
-      const systemInstruction = `You are AI Sara, Parwej's AI Finance & Strategy Assistant on Parwej's personal portfolio website.
-Parwej is a Finance Specialist, Certified Management Accountant (CMA) Aspirant, Financial Modeling Expert, and Data Analyst (Power BI, DAX, Advanced Excel, Python).
-He specializes in:
-- Discounted Cash Flow (DCF), LBO, and 3-Statement Financial Modeling
-- Activity-Based Costing (ABC), Marginal Costing, and Variance Analysis
-- Power BI Executive Dashboards, DAX formulas, Power Query ETL pipelines
-- Strategic Financial Planning & Analysis (FP&A) and Capital Budgeting
+      const systemInstruction = `You are AI Sara, the official AI Executive Strategy & Finance Assistant for Parwej Alam (Parvej Alam Sulemanali Ansari)'s personal portfolio website.
 
-Your goal is to answer questions from recruiters and executives in a concise, articulate, executive tone.
-CRITICAL COST OPTIMIZATION: Keep answers strictly under 80 words in 2 crisp, high-impact paragraphs. Highlight Parwej's key strengths, CMA credentials, and email: bhaiparwej70@gmail.com.`;
+ABOUT PARWEJ:
+- Identity: Finance Specialist, Strategic Data Analyst, and Certified Management Accountant (CMA USA) Aspirant.
+- CMA USA Credential: Cleared CMA USA Part 1 on the 1st attempt with a merit score of 380/500 (Financial Planning, Performance, Analytics, Internal Controls, and Cost Management).
+- Core Skills:
+  * 3-Statement Financial Modeling (Integrated P&L, Balance Sheet, Cash Flow, Scenario & Sensitivity Analysis).
+  * Valuation & Corporate Finance: Discounted Cash Flow (DCF), Leveraged Buyout (LBO), Comparable Company Analysis (CCA), WACC, Cap Table & Dilution Schedules.
+  * Cost & Management Accounting: Activity-Based Costing (ABC), Marginal Costing, Standard Costing, Variance Analysis (Direct Material, Labor, Overhead).
+  * Business Intelligence: Power BI, Advanced DAX (CALCULATE, FILTER, Time Intelligence, Star Schema design handling 1.25M+ rows), Power Query ETL.
+  * Technical Tools: Advanced Excel (Power Query M, VBA Macros, Financial Modeling), Python (Pandas, NumPy for financial modeling), SQL.
+- Flagship Projects:
+  1. H2 Ventures: Institutional VC Valuation & Cap Table Dilution Model with dynamic IRR waterfall.
+  2. Huskie Motor: Corporate 3-Statement & Capex Amortization Manufacturing Model.
+  3. Apex Logistics: Power BI Freight Variance & Star Schema Analytics Dashboard.
+  4. Enterprise FP&A: 12-Month Rolling Cash Flow & Capital Budgeting Suite.
+- Contact: Email: bhaiparwej70@gmail.com | Location: India / Global Remote Consulting.
+
+RESPONSE GUIDELINES:
+1. Provide articulate, executive-ready, highly informative responses.
+2. Structure answers with clear bullet points, quantifiable metrics, and bold highlights where appropriate.
+3. Keep responses concise yet thorough (approx 80-160 words).
+4. Emphasize Parwej's unique ability to bridge strategic finance precision with advanced business intelligence data analytics.
+5. If the user asks how to contact, hire, or interview Parwej, provide his direct email: bhaiparwej70@gmail.com and suggest checking out his project models.`;
 
       if (apiKey) {
         try {
@@ -162,11 +176,11 @@ CRITICAL COST OPTIMIZATION: Keep answers strictly under 80 words in 2 crisp, hig
 
           // Robust multi-model cascade (Fastest & latest official Gemini models)
           const modelsToTry = [
-            "gemini-flash-latest",
-            "gemini-3.7-flash",
-            "gemini-3.5-flash",
+            "gemini-2.5-flash",
+            "gemini-2.0-flash",
+            "gemini-1.5-flash",
             "gemini-2.5-flash-lite",
-            "gemini-flash-lite-latest"
+            "gemini-flash-latest"
           ];
           let aiText = "";
 
@@ -177,7 +191,7 @@ CRITICAL COST OPTIMIZATION: Keep answers strictly under 80 words in 2 crisp, hig
                 config: {
                   systemInstruction,
                   temperature: 0.65,
-                  maxOutputTokens: 220, // Strict token limit to keep API bill ultra-low
+                  maxOutputTokens: 350,
                 },
                 history: formattedHistory,
               });
@@ -202,16 +216,53 @@ CRITICAL COST OPTIMIZATION: Keep answers strictly under 80 words in 2 crisp, hig
 
       // Smart Fallback if Gemini API key is pending or momentarily unavailable
       const promptLower = (prompt || "").toLowerCase();
-      let fallbackText = "Hello! I am AI Sara, Parwej's Finance & Strategy Assistant. Parwej is a Finance Specialist & CMA Aspirant with expertise in 3-Statement Financial Models, Power BI DAX Telemetry, and Activity-Based Costing. Feel free to contact Parwej directly at bhaiparwej70@gmail.com!";
+      let fallbackText = `Hello! I am **AI Sara**, Parwej's AI Strategy & Finance Assistant.
 
-      if (promptLower.includes("cma") || promptLower.includes("qualification") || promptLower.includes("background")) {
-        fallbackText = "Parwej is a Certified Management Accountant (CMA) Aspirant with an in-depth background in Strategic Financial Management, Cost Accounting, Variance Analysis, and Corporate FP&A. He combines rigorous accounting principles with modern data analytics tools.";
-      } else if (promptLower.includes("model") || promptLower.includes("valuation") || promptLower.includes("excel")) {
-        fallbackText = "Parwej has engineered advanced 3-statement financial models, Venture Capital Cap Table dilution schedules (H2 Ventures), Automotive Capex sensitivity workbooks (Huskie Motor), and DCF/LBO valuation frameworks in Excel and Power Query.";
+**Parwej Alam** is a **Finance Specialist, CMA USA Candidate (Part 1 Cleared: 380/500)**, and **Strategic Data Analyst** specializing in:
+• **3-Statement Financial Modeling & Valuation** (DCF, LBO, Scenario Planning)
+• **Power BI & DAX Telemetry** (Star Schema data modeling, 1.25M+ rows)
+• **Activity-Based Costing (ABC) & Variance Analysis**
+• **Automated Excel Data Pipelines** (Power Query M, VBA)
+
+Feel free to ask specific questions about his projects, credentials, or email him directly at **bhaiparwej70@gmail.com**!`;
+
+      if (promptLower.includes("cma") || promptLower.includes("qualification") || promptLower.includes("score") || promptLower.includes("education")) {
+        fallbackText = `**Parwej's CMA USA Candidacy & Academic Credentials:**
+
+• **CMA USA Part 1 Cleared:** Passed on the first attempt with a merit score of **380 / 500**.
+• **Core Subject Competency:** Financial Planning, Performance, Analytics, Cost Management, and Internal Controls.
+• **Applied Edge:** Parwej merges classical managerial accounting with modern automated tools (Power BI, DAX, Python, Advanced Excel).
+
+For academic records or verification, please contact Parwej directly at **bhaiparwej70@gmail.com**.`;
+      } else if (promptLower.includes("model") || promptLower.includes("valuation") || promptLower.includes("excel") || promptLower.includes("dcf")) {
+        fallbackText = `**Parwej's Financial Modeling & Corporate Valuation Expertise:**
+
+• **3-Statement Modeling:** Built fully integrated, dynamic Income Statement, Balance Sheet, and Cash Flow models with revolving credit facilities and working capital schedules.
+• **Valuation Frameworks:** Expertise in Discounted Cash Flow (DCF), Leveraged Buyout (LBO), and Comparable Company Multiples (CCA).
+• **H2 Ventures VC Model:** Built institutional venture capital fund return waterfall models, dynamic Cap Tables, and multi-stage dilution schedules.
+• **Huskie Motor Capex Model:** Modeled automotive manufacturing unit economics, fixed vs. variable overhead allocation, and MACRS depreciation.
+
+Explore the live models in the **Work & Projects** section or email Parwej at **bhaiparwej70@gmail.com**.`;
       } else if (promptLower.includes("power bi") || promptLower.includes("dax") || promptLower.includes("dashboard")) {
-        fallbackText = "Parwej is an expert in Power BI & DAX telemetry. He has built multi-subsidiary Star Schema data models processing 1.25M+ rows, automated rolling 12-month cash flow forecasters, freight variance matrixes, and C-Suite executive dashboards.";
+        fallbackText = `**Parwej's Power BI & DAX Engineering Capabilities:**
+
+• **Complex DAX Measures:** Skilled in advanced time intelligence, \`CALCULATE\`, \`FILTER\`, \`ALLSELECTED\`, and dynamic KPI variance matrices.
+• **Star Schema Architecture:** Designed optimized dimensional models processing **1.25M+ rows** across multi-subsidiary datasets.
+• **Executive Dashboards:** Built real-time C-Suite telemetry for cash runway, EBITDA tracking, and supply chain logistics.
+• **Power Query ETL:** Automated end-to-end data pipelines using M-code to cleanse, transform, and normalize disparate enterprise ERP feeds.`;
       } else if (promptLower.includes("costing") || promptLower.includes("abc") || promptLower.includes("variance")) {
-        fallbackText = "Parwej applies Activity-Based Costing (ABC) and Marginal Costing frameworks to eliminate overhead allocation distortions, isolate standard vs actual cost variances, and optimize working capital.";
+        fallbackText = `**Parwej's Cost Accounting & Variance Management Framework:**
+
+• **Activity-Based Costing (ABC):** Eliminates arbitrary volume allocations by tracing costs directly to resource cost drivers.
+• **Variance Analysis:** Disaggregates standard vs. actual variances across Direct Material price/usage, Direct Labor efficiency, and Manufacturing Overhead.
+• **Marginal Costing & CVP:** Calculates contribution margins, multi-product break-even unit volumes, and margin-of-safety thresholds.`;
+      } else if (promptLower.includes("contact") || promptLower.includes("hire") || promptLower.includes("email") || promptLower.includes("interview")) {
+        fallbackText = `**Let's Connect with Parwej Alam:**
+
+• **Primary Email:** [bhaiparwej70@gmail.com](mailto:bhaiparwej70@gmail.com)
+• **Target Roles:** FP&A Analyst, Financial Modeler, Corporate Finance Specialist, Strategic Data Analyst.
+• **Availability:** Immediate / Open for Global Remote, Hybrid, or Consulting engagements.
+• **Direct Action:** Send an email or use the portfolio contact form to schedule an introductory interview.`;
       }
 
       return res.json({ reply: fallbackText, remainingQueries });

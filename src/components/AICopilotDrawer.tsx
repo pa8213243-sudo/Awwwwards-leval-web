@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, X, Send, User, Bot, Loader2, MessageSquare, ArrowRight, ShieldCheck, Mail, AlertCircle } from 'lucide-react';
+import { Sparkles, X, Send, Loader2, ShieldCheck, Mail, AlertCircle, Bot, CheckCircle2 } from 'lucide-react';
 import { ChatMessage } from '../types';
 import { ParvejAvatar } from './ParvejAvatar';
 import { setLenisScrollLocked } from '../lib/gsap';
 import { getDeviceFingerprint, getDeviceInfo, DeviceInfo } from '../lib/deviceFingerprint';
+import { sendAIMessage } from '../lib/geminiService';
 
 interface AICopilotDrawerProps {
   isOpen: boolean;
@@ -13,7 +14,83 @@ interface AICopilotDrawerProps {
 }
 
 const MAX_SESSION_QUESTIONS = 5;
-const STORAGE_KEY = 'parvej_ai_quota_v1';
+const STORAGE_KEY = 'parvej_ai_quota_v2';
+
+// Helper component to render rich markdown formatting (bold, bullet points, links, email)
+const FormattedMessage: React.FC<{ text: string }> = ({ text }) => {
+  const lines = text.split('\n');
+
+  return (
+    <div className="space-y-1.5 text-xs sm:text-sm font-light leading-relaxed">
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={idx} className="h-1" />;
+        }
+
+        // Bullet point line
+        const isBullet = trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('* ');
+        const cleanLine = isBullet ? trimmed.replace(/^[•\-\*]\s*/, '') : trimmed;
+
+        // Parse bold **text** and [link](url)
+        const parts = [];
+        const regex = /(\*\*.*?\*\*|\[.*?\]\(.*?\)|`.*?`)/g;
+        let lastIndex = 0;
+        let match;
+
+        while ((match = regex.exec(cleanLine)) !== null) {
+          if (match.index > lastIndex) {
+            parts.push(cleanLine.substring(lastIndex, match.index));
+          }
+          const token = match[0];
+          if (token.startsWith('**') && token.endsWith('**')) {
+            parts.push(
+              <strong key={match.index} className="font-semibold text-white">
+                {token.slice(2, -2)}
+              </strong>
+            );
+          } else if (token.startsWith('[') && token.includes('](')) {
+            const label = token.substring(1, token.indexOf(']('));
+            const url = token.substring(token.indexOf('](') + 2, token.length - 1);
+            parts.push(
+              <a
+                key={match.index}
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-emerald-400 hover:underline font-medium"
+              >
+                {label}
+              </a>
+            );
+          } else if (token.startsWith('`') && token.endsWith('`')) {
+            parts.push(
+              <code key={match.index} className="px-1 py-0.5 bg-white/10 font-mono text-[11px] text-emerald-300 rounded-2xs">
+                {token.slice(1, -1)}
+              </code>
+            );
+          }
+          lastIndex = regex.lastIndex;
+        }
+
+        if (lastIndex < cleanLine.length) {
+          parts.push(cleanLine.substring(lastIndex));
+        }
+
+        if (isBullet) {
+          return (
+            <div key={idx} className="flex items-start gap-2 pl-1">
+              <span className="text-emerald-400 mt-1 flex-shrink-0">•</span>
+              <div className="flex-1">{parts}</div>
+            </div>
+          );
+        }
+
+        return <p key={idx}>{parts}</p>;
+      })}
+    </div>
+  );
+};
 
 export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
   isOpen,
@@ -25,7 +102,7 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
     {
       id: 'm-1',
       sender: 'ai',
-      text: "Hello! I am AI Sara, Parwej's AI Strategy & Finance Assistant. Ask me anything about Parwej's CMA candidacy, 3-statement financial models, Power BI DAX telemetry, or Activity-Based Costing projects.",
+      text: "Hello! I am **AI Sara**, Parwej's AI Strategy & Finance Assistant.\n\nAsk me anything about Parwej's **CMA candidacy (Part 1 cleared: 380/500)**, **3-statement financial models**, **Power BI DAX telemetry**, or **Activity-Based Costing** projects.",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -118,7 +195,7 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
       const limitMsg: ChatMessage = {
         id: Date.now().toString(),
         sender: 'ai',
-        text: "You have reached the maximum limit of 5 questions for this session to preserve AI resources. To discuss opportunities directly or schedule an executive interview, please contact Parwej at bhaiparwej70@gmail.com.",
+        text: "You have reached the maximum limit of 5 questions for this session to preserve AI resources.\n\nTo discuss opportunities directly or schedule an executive interview, please contact Parwej at **bhaiparwej70@gmail.com**.",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages((prev) => [...prev, limitMsg]);
@@ -137,88 +214,42 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
     setIsGenerating(true);
 
     try {
-      let aiResponseText = '';
-      let serverRemaining: number | undefined = undefined;
-      const deviceId = getDeviceFingerprint();
+      const deviceId = deviceInfo?.deviceId || getDeviceFingerprint();
 
-      try {
-        const response = await fetch('/api/ai/copilot', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            prompt: text,
-            honeypot: honeypotValue,
-            deviceId: deviceInfo?.deviceId || deviceId,
-            deviceCode: deviceInfo?.deviceCode,
-            deviceType: deviceInfo?.deviceType,
-            os: deviceInfo?.os,
-            browser: deviceInfo?.browser,
-            history: messages.map((m) => ({
-              role: m.sender === 'user' ? 'user' : 'model',
-              parts: [{ text: m.text }]
-            }))
-          })
-        });
+      const aiResult = await sendAIMessage({
+        prompt: text,
+        honeypot: honeypotValue,
+        deviceId,
+        deviceCode: deviceInfo?.deviceCode,
+        deviceType: deviceInfo?.deviceType,
+        os: deviceInfo?.os,
+        browser: deviceInfo?.browser,
+        history: messages.map((m) => ({
+          role: m.sender === 'user' ? 'user' : 'model',
+          parts: [{ text: m.text }]
+        }))
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          if (data.reply) {
-            aiResponseText = data.reply;
-          }
-          if (typeof data.remainingQueries === 'number') {
-            serverRemaining = data.remainingQueries;
-          }
-        } else if (response.status === 429) {
-          const data = await response.json().catch(() => ({}));
-          aiResponseText = data.reply || "You have reached the maximum session question limit. Contact Parwej at bhaiparwej70@gmail.com.";
-          serverRemaining = 0;
-        }
-      } catch (fetchErr) {
-        console.warn('Backend /api/ai/copilot fetch error, attempting direct SDK fallback:', fetchErr);
-      }
-
-      // Decrement queries remaining
-      if (typeof serverRemaining === 'number') {
-        updateRemainingQueries(serverRemaining);
+      // Update remaining quota
+      if (typeof aiResult.remainingQueries === 'number') {
+        updateRemainingQueries(aiResult.remainingQueries);
       } else {
         updateRemainingQueries(remainingQueries - 1);
       }
 
-      // If backend was not reached or returned empty, try direct client-side GoogleGenAI
-      if (!aiResponseText) {
-        const clientKey = (typeof process !== 'undefined' && (process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY)) || '';
-        if (clientKey) {
-          const { GoogleGenAI } = await import('@google/genai');
-          const ai = new GoogleGenAI({ apiKey: clientKey });
-          const chat = ai.chats.create({
-            model: 'gemini-flash-latest',
-            config: {
-              systemInstruction: `You are AI Sara, Parwej's AI Finance & Strategy Assistant on Parwej's personal portfolio website. Parwej is a Finance Specialist and CMA Aspirant. Keep responses strictly under 80 words in 2 crisp paragraphs. Email: bhaiparwej70@gmail.com`,
-              temperature: 0.65,
-            },
-          });
-          const result = await chat.sendMessage({ message: text });
-          if (result && result.text) {
-            aiResponseText = result.text;
-          }
-        }
-      }
-
-      const finalReply = aiResponseText || "Hello! I am AI Sara. Parwej is a Finance Specialist & CMA Candidate with expertise in 3-Statement Modeling, Power BI DAX, and Activity-Based Costing. Reach out directly at bhaiparwej70@gmail.com!";
-
       const aiMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: 'ai',
-        text: finalReply,
+        text: aiResult.reply,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages((prev) => [...prev, aiMsg]);
     } catch (err: any) {
-      console.error('AI Sara error:', err);
+      console.error('AI Sara query error:', err);
       const errorMsg: ChatMessage = {
         id: (Date.now() + 1).toString(),
         sender: 'ai',
-        text: "Hello! I am AI Sara, Parwej's Finance & Strategy Assistant. Parwej is a Finance Specialist & CMA Candidate. Reach out directly at bhaiparwej70@gmail.com!",
+        text: "Hello! I am **AI Sara**, Parwej's Finance & Strategy Assistant.\n\nParwej is a **Finance Specialist & CMA Candidate (380/500)** skilled in **3-Statement Financial Modeling**, **Power BI & DAX**, and **Activity-Based Costing**.\n\nPlease reach out directly at **bhaiparwej70@gmail.com**!",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -270,8 +301,8 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
                   </span>
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <p className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider">
-                    GEMINI 3.7 FLASH
+                  <p className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+                    <Sparkles className="w-2.5 h-2.5" /> GEMINI AI ACTIVE
                   </p>
                   {deviceInfo && (
                     <span className="text-[9px] font-mono text-gray-400 px-1 py-0.2 bg-white/5 border border-white/10 rounded-2xs">
@@ -318,13 +349,17 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
                 className={`flex flex-col ${m.sender === 'user' ? 'items-end' : 'items-start'}`}
               >
                 <div
-                  className={`max-w-[88%] p-3.5 sm:p-4 text-xs sm:text-sm font-light leading-relaxed rounded-xs ${
+                  className={`max-w-[90%] p-3.5 sm:p-4 rounded-xs ${
                     m.sender === 'user'
                       ? 'bg-white text-black font-normal shadow-md'
-                      : 'bg-black/60 border border-white/15 text-white'
+                      : 'bg-black/70 border border-white/15 text-gray-200'
                   }`}
                 >
-                  <p className="whitespace-pre-wrap">{m.text}</p>
+                  {m.sender === 'user' ? (
+                    <p className="text-xs sm:text-sm font-medium whitespace-pre-wrap">{m.text}</p>
+                  ) : (
+                    <FormattedMessage text={m.text} />
+                  )}
                 </div>
                 <span className="text-[10px] font-mono text-[#8E8E93] mt-1 px-1">
                   {m.timestamp}
@@ -335,7 +370,7 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
             {isGenerating && (
               <div className="flex items-center gap-2 p-3 bg-black/40 border border-white/10 text-xs font-mono text-emerald-400 rounded-xs">
                 <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />
-                <span>AI SARA IS THINKING...</span>
+                <span>AI SARA IS THINKING & GENERATING DETAILS...</span>
               </div>
             )}
 
@@ -362,7 +397,7 @@ export const AICopilotDrawer: React.FC<AICopilotDrawerProps> = ({
                       onClose();
                       onNavigate('contact');
                     }}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white font-mono text-xs font-semibold rounded-xs border border-white/20 transition-colors"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white font-mono text-xs font-semibold rounded-xs border border-white/20 transition-colors cursor-pointer"
                   >
                     <span>OPEN CONTACT FORM ↵</span>
                   </button>
